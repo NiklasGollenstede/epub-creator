@@ -1,0 +1,6 @@
+*.xpi
+node_modules
+bin
+target
+out
+npm-debug.log

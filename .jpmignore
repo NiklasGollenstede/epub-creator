@@ -1,0 +1,7 @@
+node_modules/babel
+node_modules/command-line-args
+node_modules/electron-prebuilt
+node_modules/jszip
+.*
+*.xpi
+test

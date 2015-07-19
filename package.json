@@ -1,0 +1,15 @@
+{
+	"name": "epub",
+	"title": "ePub",
+	"author": "Niklas Gollenstede",
+	"license": "MPL 2.0",
+	"version": "0.1.0",
+	"dependencies": {
+		"babel": "latest",
+		"command-line-args": "latest",
+		"electron-prebuilt": "latest",
+		"jszip": "latest",
+		"es6lib": "NiklasGollenstede/es6lib"
+	},
+	"main": "main.js"
+}
