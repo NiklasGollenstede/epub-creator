@@ -3,7 +3,7 @@
 
 const { TemplateEngine,  ForEach, ForOf, While, If, Value, Index, Key, Call, Predicate, End, escape: { escapeHtml, } } = require('./node_modules/es6lib/template/index.js');
 
-const navHtml = exports.navHtml = ({ language, chapters, })  => (TemplateEngine({ trim: 'front parts strong', })(escapeHtml)`
+const navHtml = exports.navHtml = ({ language, chapters, title })  => (TemplateEngine({ trim: 'front parts strong', })(escapeHtml)`
 <?xml version="1.0" encoding="UTF-8" ?>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ops="http://www.idpf.org/2007/ops"
@@ -12,19 +12,19 @@ const navHtml = exports.navHtml = ({ language, chapters, })  => (TemplateEngine(
 		<title>${ 'Table of Content' }</title>
 	</head>
 	<body>
-	 <nav ops:type="toc">
+		<nav ops:type="toc">
 
-		<h1>${ 'Table of Content' }</h1>
+			<h1>${ title }</h1>
 
-		<ol>
-			<li><a href="nav.xhtml">${ 'Table of Content' }</a></li>
-			${ ForEach(chapters) }
+			<ol>
+				<li><a href="nav.xhtml">${ 'Table of Content' }</a></li>
+				${ ForEach(chapters) }
 				<li><a href="${ Call(v => v.name) }">${ Call(v => v.title) }</a></li>
-			${ End.ForEach }
-		</ol>
+				${ End.ForEach }
+			</ol>
 
-	</nav>
- </body>
+		</nav>
+	</body>
 </html>
 `);
 
@@ -52,40 +52,40 @@ const contentOpf = exports.contentOpf = ({ guid, language, title, description, c
 		<dc:title xml:lang="${ language }">${ title }</dc:title>
 
 		${ If(description) }
-			<dc:description xml:lang="${ language }">${ typeof description === 'object' ? description.full || description.short : description }</dc:description>
+		<dc:description xml:lang="${ language }">${ typeof description === 'object' ? description.full || description.short : description }</dc:description>
 		${ End.If }
 		${ ForEach(creators) }
 			<dc:creator id="author${ Index }" xml:lang="${ language }">${ Call(v => v.name) }</dc:creator>
 			${ If(v => v.as) }
-				<meta refines="#author${ Index }" property="file-as">${ Call(v => v.as) }</meta>
+			<meta refines="#author${ Index }" property="file-as">${ Call(v => v.as) }</meta>
 			${ End.If }
 			${ If(v => v.role) }
-				<meta refines="#author${ Index }" property="role" scheme="marc:relators">${ Call(v => v.role) }</meta>
+			<meta refines="#author${ Index }" property="role" scheme="marc:relators">${ Call(v => v.role) }</meta>
 			${ End.If }
 		${ End.ForEach }
 		${ If(published) }
-			<meta property="dcterms:created">${ new Date(+(published || 0)).toISOString().match(/^.*?T/)[0].slice(0, -1) }</meta>
+		<meta property="dcterms:created">${ new Date(+(published || 0)).toISOString().match(/^.*?T/)[0].slice(0, -1) }</meta>
 		${ End.If }
 	</metadata>
 
 	<manifest>
 		<item id="ncx" href="content.ncx" media-type="application/x-dtbncx+xml"/>
 		${ ForEach(chapters) }
-			<item id="chapter${ Index }" href="${ Call(v => v.name) }" media-type="${ Call(v => v.mimeType) }"${ If(v => v.name === nav) } properties="nav"${ End.If }/>
+		<item id="chapter${ Index }" href="${ Call(v => v.name) }" media-type="${ Call(v => v.mimeType) }"${ If(v => v.name === nav) } properties="nav"${ End.If }/>
 		${ End.ForEach }
 	</manifest>
 
 	<spine toc="ncx">
 		${ ForEach(chapters) }
-			<itemref idref="chapter${ Index }"/>
+		<itemref idref="chapter${ Index }"/>
 		${ End.ForEach }
 	</spine>
 	<guide>
 		${ If(cover) }
-			<reference href="${ cover }" title="Cover" type="cover"/>
+		<reference href="${ cover }" title="Cover" type="cover"/>
 		${ End.If }
 		${ If(nav) }
-			<reference href="${ nav }" title="Table of Contents" type="toc"/>
+		<reference href="${ nav }" title="Table of Contents" type="toc"/>
 		${ End.If }
 	</guide>
 </package>
@@ -108,12 +108,12 @@ const contentNcx = exports.contentNcx = ({ guid, language, title, description, c
 	</docAuthor>
 	<navMap>
 		${ ForEach(chapters) }
-			<navPoint playOrder="${ Index }" id="chapter${ Index }">
-				<navLabel>
-					<text>${ Call(v => v.title) }</text>
-				</navLabel>
-				<content src="${ Call(v => v.name) }"/>
-			</navPoint>
+		<navPoint playOrder="${ Index }" id="chapter${ Index }">
+			<navLabel>
+				<text>${ Call(v => v.title) }</text>
+			</navLabel>
+			<content src="${ Call(v => v.name) }"/>
+		</navPoint>
 		${ End.ForEach }
 	</navMap>
 </ncx>

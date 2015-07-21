@@ -50,8 +50,8 @@ const collect = exports.collect = function collect() {
 			doc.querySelector('head').innerHTML = `<title>${ doc.querySelector('title') && doc.querySelector('title').innerHTML }</title>`;
 
 			if (
-				(/^(content|contents|nav|navigation|inhalt)$/i).test((name.match(/\/(.*?)\.\w{1,10}$/) || [ '', '' ])[1])
-				|| (/^(content|contents|nav|navigation|inhalt)$/i).test(title)
+				name && (/^(content|contents|nav|navigation|inhalt)$/i).test((name.match(/\/(.*?)\.\w{1,10}$/) || [ '', '' ])[1])
+				|| title && (/^(content|contents|nav|navigation|inhalt)$/i).test(title)
 			) {
 				nav = name;
 			}
@@ -64,8 +64,8 @@ const collect = exports.collect = function collect() {
 					.replace(/(<[^>]+?) ?class=""/g, '$1')
 					.replace(/(<[^>]+?) ?style=""/g, '$1')
 					.replace(/(<[^>]+?) ?data-loc="\d*"/g, '$1')
-					.replace(/<img.*?[^\/]>/g, (m, i, s) => s.startsWith('</img>', m.length + i) ? m : m + '</img>')
-					.replace(/<br.*?[^\/]>/g, (m, i, s) => s.startsWith('</br>', m.length + i) ? m : m + '</br>')
+					.replace(/<img.*?>/g, m => m +'</img>') //(m, i, s) => s.startsWith('</img>', m.length + i) ? m : m + '</img>')
+					.replace(/<br.*?>/g, m => m +'</br>') //(m, i, s) => s.startsWith('</br>', m.length + i) ? m : m + '</br>')
 					.replace(/&nbsp;/g, ' '),
 				mimeType: spine && spine['media-type'] || ((doc.doctype && doc.doctype.name || 'html')),
 				linear: spine && spine.linear,

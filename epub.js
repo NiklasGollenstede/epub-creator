@@ -26,6 +26,18 @@ const EPub = exports.EPub = function EPub(options) {
 
 	this.chapters.forEach(chapter => chapter.mimeType in mimeTypes && (chapter.mimeType = mimeTypes[chapter.mimeType]));
 
+	if (typeof this.nav === 'string') {
+		const nav = this.chapters.find(({ name, }) => name === this.nav);
+		if (!nav) {
+			this.nav = true;
+		} else if (!(/<nav[^>]*?ops:type="toc".*?>[^]*?<\/nav>/).test(nav.content)) {
+			nav.name = 'nav.xhtml'; // rename: makes chapters referenciable without resolving, but destroyes references to nav itself
+			// keep title and position
+			nav.mimeType = 'application/xhtml+xml';
+			nav.content = Templates.navHtml(this);
+		}
+	}
+
 	if (this.nav === true) {
 		this.chapters.unshift({
 			name: 'nav.xhtml',
@@ -34,7 +46,7 @@ const EPub = exports.EPub = function EPub(options) {
 			content: log('nav', Templates.navHtml(this))
 		});
 		this.nav = 'nav.xhtml';
-	} // XXX else if (no 'toc'-thing in content) replace ...
+	}
 };
 EPub.prototype = {
 	loadResources() { // dosn't work
