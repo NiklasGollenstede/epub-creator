@@ -1,15 +1,23 @@
 'use strict';
 
 const JSZip = (typeof process !== 'undefined' && process.versions && process.versions.node) ? require('jszip/lib') : require('./jszip/jszip.js');
-const { functional: { log, }, format: { Guid, }, concurrent: { spawn, }, network: { HttpRequest, }, dom: { saveAs, }, } = require('./node_modules/es6lib');
+const { functional: { log, }, format: { Guid, }, concurrent: { spawn, }, network: { HttpRequest, }, dom: { saveAs, }, } = require('es6lib');
 
 const Templates = require('./templates.js');
 
 const mimeTypes = {
 	html: 'text/html',
+	xhtml: 'application/xhtml+xml',
 };
 
-log(JSZip);
+function arrayBufferToString(buffer) {
+	buffer = new Uint8Array(buffer);
+	const ret = new Array(buffer.length);
+	for (let i = 0, length = buffer.length; i < length; ++i) {
+		ret[i] = String.fromCharCode(buffer[i]);
+	}
+	return ret.join('');
+}
 
 const EPub = exports.EPub = function EPub(options) {
 	Object.assign(this, options);
@@ -34,7 +42,7 @@ const EPub = exports.EPub = function EPub(options) {
 			nav.name = 'nav.xhtml'; // rename: makes chapters referenciable without resolving, but destroyes references to nav itself
 			// keep title and position
 			nav.mimeType = 'application/xhtml+xml';
-			nav.content = Templates.navHtml(this);
+			nav.content = log('nav.xml', Templates.navHtml(this));
 		}
 	}
 
@@ -43,28 +51,32 @@ const EPub = exports.EPub = function EPub(options) {
 			name: 'nav.xhtml',
 			title: 'Table of Content',
 			mimeType: 'application/xhtml+xml',
-			content: log('nav', Templates.navHtml(this))
+			content: log('nav.xml', Templates.navHtml(this)),
 		});
 		this.nav = 'nav.xhtml';
 	}
 };
 EPub.prototype = {
-	loadResources() { // dosn't work
+	loadResources() {
 		if (!this.resources) { return Promise.resolve(); }
 		return spawn(function*() {
+			this.resources = this.resources.filter((r1, i, a) => i === a.findIndex(r2 => r2.name === r1.name));
 			console.log('resources', this.resources);
 			for (let resource of this.resources) {
 				console.log('resource', resource);
 				if (resource.src && !resource.content) {
-					resource.options = Object.assign(resource.options || { }, { responseType: 'arraybuffer', binary: true, });
-					let req = (yield HttpRequest(resource.src, resource.options));
-					console.log('req', req);
-					resource.content = req.response;
-					console.log('content', resource.content);
+					let request = yield(HttpRequest(Object.assign({
+						responseType: 'arraybuffer',
+						binary: true,
+					}, resource)));
+					console.log('request', request);
+					resource.content = arrayBufferToString(request.response);
+					resource.mimeType = request.getResponseHeader('content-type') || resource.mimeType;
+					resource.options = { binary: true, };
 					resource.name = resource.name || resource.src.match(/\/\/.*?\/(.*)$/)[1];
 				}
 			}
-		}.bind(this));
+		}, this);
 	},
 	zip() {
 		const zip = new JSZip();

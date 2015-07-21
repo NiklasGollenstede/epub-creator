@@ -37,7 +37,7 @@ const containerXml = exports.containerXml = () => (TemplateEngine({ trim: 'front
 </container>
 `);
 
-const contentOpf = exports.contentOpf = ({ guid, language, title, description, creators, published, chapters, nav, cover, }) => (TemplateEngine({ trim: 'front parts strong', })(escapeHtml)`
+const contentOpf = exports.contentOpf = ({ guid, language, title, description, creators, published, chapters, resources, nav, cover, }) => (TemplateEngine({ trim: 'front parts strong', })(escapeHtml)`
 <?xml version="1.0" encoding="UTF-8"?>
 <package version="3.0"
 	xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -72,6 +72,9 @@ const contentOpf = exports.contentOpf = ({ guid, language, title, description, c
 		<item id="ncx" href="content.ncx" media-type="application/x-dtbncx+xml"/>
 		${ ForEach(chapters) }
 		<item id="chapter${ Index }" href="${ Call(v => v.name) }" media-type="${ Call(v => v.mimeType) }"${ If(v => v.name === nav) } properties="nav"${ End.If }/>
+		${ End.ForEach }
+		${ ForEach(resources) }
+		<item id="resource${ Index }" href="${ Call(v => v.name) }" media-type="${ Call(v => v.mimeType) }"/>
 		${ End.ForEach }
 	</manifest>
 

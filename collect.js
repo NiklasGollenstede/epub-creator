@@ -1,6 +1,6 @@
-'use strict';
+(function(exports) { 'use strict';
 
-const collect = exports.collect = function collect() {
+exports = function collect() {
 	const bData = JSON.parse(document.head.querySelector('script:not([src])').innerHTML.match(/^[ \t]*?window.bData = (.*);$/m)[1]);
 
 	const findRecursive = (array, test, key) => {
@@ -67,7 +67,7 @@ const collect = exports.collect = function collect() {
 					.replace(/<img.*?>/g, m => m +'</img>') //(m, i, s) => s.startsWith('</img>', m.length + i) ? m : m + '</img>')
 					.replace(/<br.*?>/g, m => m +'</br>') //(m, i, s) => s.startsWith('</br>', m.length + i) ? m : m + '</br>')
 					.replace(/&nbsp;/g, ' '),
-				mimeType: spine && spine['media-type'] || ((doc.doctype && doc.doctype.name || 'html')),
+				mimeType: spine && spine['media-type'] || ((doc.doctype && doc.doctype.name || 'xhtml')),
 				linear: spine && spine.linear,
 			});
 		}),
@@ -79,3 +79,5 @@ const collect = exports.collect = function collect() {
 		nav,
 	});
 };
+
+const moduleName = 'collect/overdrive'; if (typeof module !== 'undefined') { module.exports = exports; } else if (typeof define === 'function') { define(moduleName, exports); } else if (typeof window !== 'undefined' && typeof module === 'undefined') { window[moduleName] = exports; } return exports; })({ });
