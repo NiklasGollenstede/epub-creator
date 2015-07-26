@@ -3,7 +3,7 @@
 
 const { TemplateEngine,  ForEach, ForOf, While, If, Value, Index, Key, Call, Predicate, End, escape: { escapeHtml, } } = require('./node_modules/es6lib/template/index.js');
 
-const navHtml = exports.navHtml = ({ language, chapters, title })  => (TemplateEngine({ trim: 'front parts strong', })(escapeHtml)`
+const navHtml = exports.navHtml = ({ language, chapters, title, nav, })  => (TemplateEngine({ trim: 'front parts strong', })(escapeHtml)`
 <?xml version="1.0" encoding="UTF-8" ?>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ops="http://www.idpf.org/2007/ops"
@@ -17,7 +17,9 @@ const navHtml = exports.navHtml = ({ language, chapters, title })  => (TemplateE
 			<h1>${ title }</h1>
 
 			<ol>
+				${ If(nav === true)}
 				<li><a href="nav.xhtml">${ 'Table of Content' }</a></li>
+				${ End.If }
 				${ ForEach(chapters) }
 				<li><a href="${ Call(v => v.name) }">${ Call(v => v.title) }</a></li>
 				${ End.ForEach }

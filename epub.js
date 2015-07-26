@@ -1,4 +1,6 @@
 'use strict';
+/* global Uint8Array */
+/* global process */
 
 const JSZip = (typeof process !== 'undefined' && process.versions && process.versions.node) ? require('jszip/lib') : require('./jszip/jszip.js');
 const { functional: { log, }, format: { Guid, }, concurrent: { spawn, }, network: { HttpRequest, }, dom: { saveAs, }, } = require('es6lib');
@@ -39,7 +41,7 @@ const EPub = exports.EPub = function EPub(options) {
 		if (!nav) {
 			this.nav = true;
 		} else if (!(/<nav[^>]*?ops:type="toc".*?>[^]*?<\/nav>/).test(nav.content)) {
-			nav.name = 'nav.xhtml'; // rename: makes chapters referenciable without resolving, but destroyes references to nav itself
+			nav.name = this.nav = 'nav.xhtml'; // rename: makes chapters referenciable without resolving, but destroyes references to nav itself
 			// keep title and position
 			nav.mimeType = 'application/xhtml+xml';
 			nav.content = log('nav.xml', Templates.navHtml(this));
