@@ -1,7 +1,10 @@
 'use strict';
 (function(global) {
 
-const { TemplateEngine,  ForEach, ForOf, While, If, Value, Index, Key, Call, Predicate, End, escape: { escapeHtml, } } = require('./node_modules/es6lib/template/index.js');
+const {
+	TemplateEngine,  ForEach, ForOf, While, If, Value, Index, Key, Call, Predicate, End, NoMap,
+	escape: { escapeHtml, removeTags, }
+} = require('./node_modules/es6lib/template/index.js');
 
 const navHtml = exports.navHtml = ({ language, chapters, title, nav, })  => (TemplateEngine({ trim: 'front parts strong', })(escapeHtml)`
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -54,7 +57,9 @@ const contentOpf = exports.contentOpf = ({ guid, language, title, description, c
 		<dc:title xml:lang="${ language }">${ title }</dc:title>
 
 		${ If(description) }
-		<dc:description xml:lang="${ language }">${ typeof description === 'object' ? description.full || description.short : description }</dc:description>
+		<dc:description xml:lang="${ language }">${
+			removeTags(typeof description === 'object' ? description.full || description.short : description)
+		}</dc:description>
 		${ End.If }
 		${ ForEach(creators) }
 			<dc:creator id="author${ Index }" xml:lang="${ language }">${ Call(v => v.name) }</dc:creator>
@@ -63,6 +68,11 @@ const contentOpf = exports.contentOpf = ({ guid, language, title, description, c
 			${ End.If }
 			${ If(v => v.role) }
 			<meta refines="#author${ Index }" property="role" scheme="marc:relators">${ Call(v => v.role) }</meta>
+			${ End.If }
+			${ If(v => v.bio) }
+			<!-- <meta refines="#author${ Index }" property="bio" scheme="marc:relators">${
+				Call(v => removeTags(v.bio)
+			}</meta> -->
 			${ End.If }
 		${ End.ForEach }
 		${ If(published) }

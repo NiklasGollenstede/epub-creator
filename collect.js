@@ -22,7 +22,8 @@ exports = function collect() {
 	};
 
 	const resources = [ ];
-	let nav = true;
+	let nav = false;
+	let cover = false;
 
 	return ({
 		chapters: Array.map(document.querySelectorAll('.bounds>iframe'), (frame, index) => {
@@ -49,11 +50,17 @@ exports = function collect() {
 
 			doc.querySelector('head').innerHTML = `<title>${ doc.querySelector('title') && doc.querySelector('title').innerHTML }</title>`;
 
-			if (
+			if (!nav && (
 				name && (/^(content|contents|nav|navigation|inhalt)$/i).test((name.match(/\/(.*?)\.\w{1,10}$/) || [ '', '' ])[1])
 				|| title && (/^(content|contents|nav|navigation|inhalt)$/i).test(title)
-			) {
+			)) {
 				nav = name;
+			}
+			if (!cover && (
+				name && (/^(cover|title|titel)$/i).test((name.match(/\/(.*?)\.\w{1,10}$/) || [ '', '' ])[1])
+				|| title && (/^(cover|title|titel)$/i).test(title)
+			)) {
+				cover = name;
 			}
 
 
@@ -75,8 +82,9 @@ exports = function collect() {
 		description: bData.description,
 		language: bData.language,
 		creator: bData.creator,
-		resources, // TODO: make unique
-		nav,
+		resources,
+		cover,
+		nav: nav || true,
 	});
 };
 

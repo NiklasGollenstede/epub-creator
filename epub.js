@@ -3,7 +3,14 @@
 /* global process */
 
 const JSZip = (typeof process !== 'undefined' && process.versions && process.versions.node) ? require('jszip/lib') : require('./jszip/jszip.js');
-const { functional: { log, }, format: { Guid, }, concurrent: { spawn, }, network: { HttpRequest, }, dom: { saveAs, }, } = require('es6lib');
+const {
+	concurrent: { spawn, },
+	dom: { saveAs, },
+	format: { Guid, },
+	functional: { log, },
+	network: { HttpRequest, },
+	object: { copyProperties, },
+} = require('es6lib');
 
 const Templates = require('./templates.js');
 
@@ -22,7 +29,7 @@ function arrayBufferToString(buffer) {
 }
 
 const EPub = exports.EPub = function EPub(options) {
-	Object.assign(this, options);
+	copyProperties(this, options);
 	this.language = this.language || 'en';
 	this.guid = this.guid || Guid();
 	this.creators = [].concat(this.creators, this.creator, this.author, this.authors).filter(x => x);
@@ -36,7 +43,11 @@ const EPub = exports.EPub = function EPub(options) {
 
 	this.chapters.forEach(chapter => chapter.mimeType in mimeTypes && (chapter.mimeType = mimeTypes[chapter.mimeType]));
 
+	this.chapters.forEach(chapter => chapter.name = chapter.name.replace(/^oebps[\/\\]/i, ''));
+	this.resources.forEach(resource => resource.name = resource.name.replace(/^oebps[\/\\]/i, ''));
+
 	if (typeof this.nav === 'string') {
+		this.nav = this.nav.replace(/^oebps[\/\\]/i, '');
 		const nav = this.chapters.find(({ name, }) => name === this.nav);
 		if (!nav) {
 			this.nav = true;
@@ -75,7 +86,7 @@ EPub.prototype = {
 					resource.content = arrayBufferToString(request.response);
 					resource.mimeType = request.getResponseHeader('content-type') || resource.mimeType;
 					resource.options = { binary: true, };
-					resource.name = resource.name || resource.src.match(/\/\/.*?\/(.*)$/)[1];
+					resource.name = resource.name || resource.src.match(/\/\/.*?\/(.*)$/)[1].replace(/^oebps[\/\\]/i, '');
 				}
 			}
 		}, this);
