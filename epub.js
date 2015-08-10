@@ -3,21 +3,19 @@
 /* global process */
 
 const JSZip = (typeof process !== 'undefined' && process.versions && process.versions.node) ? require('jszip/lib') : require('./jszip/jszip.js');
+
 const {
 	concurrent: { spawn, },
 	dom: { saveAs, },
 	format: { Guid, },
 	functional: { log, },
-	network: { HttpRequest, },
+	network: { HttpRequest, mimeTypes, },
 	object: { copyProperties, },
 } = require('es6lib');
 
 const Templates = require('./templates.js');
 
-const mimeTypes = {
-	html: 'text/html',
-	xhtml: 'application/xhtml+xml',
-};
+// TODO: as fallback: derive mimeTypes from file extension
 
 function arrayBufferToString(buffer) {
 	buffer = new Uint8Array(buffer);
@@ -72,24 +70,20 @@ const EPub = exports.EPub = function EPub(options) {
 EPub.prototype = {
 	loadResources() {
 		if (!this.resources) { return Promise.resolve(); }
-		return spawn(function*() {
-			this.resources = this.resources.filter((r1, i, a) => i === a.findIndex(r2 => r2.name === r1.name));
-			console.log('resources', this.resources);
-			for (let resource of this.resources) {
-				console.log('resource', resource);
-				if (resource.src && !resource.content) {
-					let request = yield(HttpRequest(Object.assign({
-						responseType: 'arraybuffer',
-						binary: true,
-					}, resource)));
-					console.log('request', request);
-					resource.content = arrayBufferToString(request.response);
-					resource.mimeType = request.getResponseHeader('content-type') || resource.mimeType;
-					resource.options = { binary: true, };
-					resource.name = resource.name || resource.src.match(/\/\/.*?\/(.*)$/)[1].replace(/^oebps[\/\\]/i, '');
-				}
-			}
-		}, this);
+		this.resources = this.resources.filter((r1, i, a) => i === a.findIndex(r2 => r2.name === r1.name));
+		return Promise.all(this.resources.map(
+			resource => HttpRequest(Object.assign({
+				responseType: 'arraybuffer',
+				binary: true,
+			}, resource))
+			.then(request => {
+				resource.content = arrayBufferToString(request.response);
+				resource.mimeType = request.getResponseHeader('content-type') || resource.mimeType;
+				resource.options = { binary: true, };
+				resource.name = resource.name || resource.src.match(/\/\/.*?\/(.*)$/)[1].replace(/^oebps[\/\\]/i, '');
+				console.log('resource', this.resources.indexOf(resource), resource);
+			})
+		));
 	},
 	zip() {
 		const zip = new JSZip();

@@ -6,7 +6,9 @@ const {
 	escape: { escapeHtml, removeTags, }
 } = require('./node_modules/es6lib/template/index.js');
 
-const navHtml = exports.navHtml = ({ language, chapters, title, nav, })  => (TemplateEngine({ trim: 'front parts strong', })(escapeHtml)`
+const engine = TemplateEngine({ trim: 'front parts strong', mapper: escapeHtml, });
+
+const navHtml = exports.navHtml = ({ language, chapters, title, nav, })  => (engine`
 <?xml version="1.0" encoding="UTF-8" ?>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ops="http://www.idpf.org/2007/ops"
@@ -33,7 +35,7 @@ const navHtml = exports.navHtml = ({ language, chapters, title, nav, })  => (Tem
 </html>
 `);
 
-const containerXml = exports.containerXml = () => (TemplateEngine({ trim: 'front parts strong', })(escapeHtml)`
+const containerXml = exports.containerXml = () => (engine`
 <?xml version="1.0" encoding="UTF-8" ?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
 	<rootfiles>
@@ -42,7 +44,7 @@ const containerXml = exports.containerXml = () => (TemplateEngine({ trim: 'front
 </container>
 `);
 
-const contentOpf = exports.contentOpf = ({ guid, language, title, description, creators, published, chapters, resources, nav, cover, }) => (TemplateEngine({ trim: 'front parts strong', })(escapeHtml)`
+const contentOpf = exports.contentOpf = ({ guid, language, title, description, creators, published, chapters, resources, nav, cover, }) => (engine`
 <?xml version="1.0" encoding="UTF-8"?>
 <package version="3.0"
 	xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -71,7 +73,7 @@ const contentOpf = exports.contentOpf = ({ guid, language, title, description, c
 			${ End.If }
 			${ If(v => v.bio) }
 			<!-- <meta refines="#author${ Index }" property="bio" scheme="marc:relators">${
-				Call(v => removeTags(v.bio)
+				Call(v => removeTags(v.bio))
 			}</meta> -->
 			${ End.If }
 		${ End.ForEach }
@@ -106,7 +108,7 @@ const contentOpf = exports.contentOpf = ({ guid, language, title, description, c
 </package>
 `);
 
-const contentNcx = exports.contentNcx = ({ guid, language, title, description, creators, published, chapters, }) => (TemplateEngine({ trim: 'front parts strong', })(escapeHtml)`
+const contentNcx = exports.contentNcx = ({ guid, language, title, description, creators, published, chapters, }) => (engine`
 <?xml version="1.0" encoding="UTF-8"?>
 <ncx
 	xmlns="http://www.daisy.org/z3986/2005/ncx/"
@@ -134,7 +136,7 @@ const contentNcx = exports.contentNcx = ({ guid, language, title, description, c
 </ncx>
 `);
 
-const htmlFrame = exports.htmlFrame = (content) => (TemplateEngine({ trim: 'front parts strong', })`
+const htmlFrame = exports.htmlFrame = (content) => (`
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
