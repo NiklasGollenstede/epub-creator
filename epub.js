@@ -15,8 +15,6 @@ const {
 
 const Templates = require('./templates.js');
 
-// TODO: as fallback: derive mimeTypes from file extension
-
 function arrayBufferToString(buffer) {
 	buffer = new Uint8Array(buffer);
 	const ret = new Array(buffer.length);
@@ -39,21 +37,21 @@ const EPub = exports.EPub = function EPub(options) {
 		&& (chapter.mimeType = 'text/html')
 	);
 
-	this.chapters.forEach(chapter => chapter.mimeType in mimeTypes && (chapter.mimeType = mimeTypes[chapter.mimeType]));
-
-	this.chapters.forEach(chapter => chapter.name = chapter.name.replace(/^oebps[\/\\]/i, ''));
-	this.resources.forEach(resource => resource.name = resource.name.replace(/^oebps[\/\\]/i, ''));
+	[].concat(this.chapters, this.resources).forEach(entry => {
+		entry.name = entry.name.replace(/^oebps[\/\\]/i, '');
+		!entry.mimeType && entry.name && (entry.mimeType = (entry.name.match(/\.\w+$/) || [0,'',])[1]);
+		entry.mimeType = mimeTypes[entry.mimeType] || entry.mimeType;
+	});
 
 	if (typeof this.nav === 'string') {
 		this.nav = this.nav.replace(/^oebps[\/\\]/i, '');
 		const nav = this.chapters.find(({ name, }) => name === this.nav);
 		if (!nav) {
 			this.nav = true;
-		} else if (!(/<nav[^>]*?ops:type="toc".*?>[^]*?<\/nav>/).test(nav.content)) {
-			nav.name = this.nav = 'nav.xhtml'; // rename: makes chapters referenciable without resolving, but destroyes references to nav itself
-			// keep title and position
+		} else if (!(/<nav[^>]*?ops:type="toc".*?>[^]*?<\/nav>/).test(nav.content)) { // invalid toc
 			nav.mimeType = 'application/xhtml+xml';
-			nav.content = log('nav.xml', Templates.navHtml(this));
+			const prefix = nav.name.replace(/[^\/\\]+/g, '..').replace(/\.\.$/, '');
+			nav.content = log('replace', nav.name, 'with', Templates.navHtml(this, prefix));
 		}
 	}
 

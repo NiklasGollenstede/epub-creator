@@ -8,7 +8,7 @@ const {
 
 const engine = TemplateEngine({ trim: 'front parts strong', mapper: escapeHtml, });
 
-const navHtml = exports.navHtml = ({ language, chapters, title, nav, })  => (engine`
+const navHtml = exports.navHtml = ({ language, chapters, title, nav, }, prefix)  => (engine`
 <?xml version="1.0" encoding="UTF-8" ?>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ops="http://www.idpf.org/2007/ops"
@@ -26,7 +26,7 @@ const navHtml = exports.navHtml = ({ language, chapters, title, nav, })  => (eng
 				<li><a href="nav.xhtml">${ 'Table of Content' }</a></li>
 				${ End.If }
 				${ ForEach(chapters) }
-				<li><a href="${ Call(v => v.name) }">${ Call(v => v.title) }</a></li>
+				<li><a href="${ Call(v => prefix + v.name) }">${ Call(v => v.title) }</a></li>
 				${ End.ForEach }
 			</ol>
 
