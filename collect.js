@@ -46,7 +46,7 @@ exports = function collect() {
 			const name = (doc.querySelector('base') && doc.querySelector('base').href.match(/^.*?:\/\/.*?\/(.*?)$/) || [])[1];
 			const navToc = name && findRecursive(bData.nav.toc, ({ path, }) => (path.substring(0, path.indexOf('?')) || path) === name, 'contents');
 			const spine = name && findRecursive(bData.spine, ({ path, }) => (path.substring(0, path.indexOf('?')) || path) === name, 'contents');
-			const title = navToc && navToc.title || (doc.querySelector('h1, h2, h3, h4') || { textContent: '<unknown>', }).textContent;
+			const title = navToc && navToc.title || (doc.querySelector('h1, h2, h3, h4') || { textContent: '<unnamed>', }).textContent;
 
 			doc.querySelector('head').innerHTML = `<title>${ doc.querySelector('title') && doc.querySelector('title').innerHTML }</title>`;
 

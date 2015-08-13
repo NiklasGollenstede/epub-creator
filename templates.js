@@ -8,7 +8,7 @@ const {
 
 const engine = TemplateEngine({ trim: 'front parts strong', mapper: escapeHtml, });
 
-const navHtml = exports.navHtml = ({ language, chapters, title, nav, }, prefix)  => (engine`
+const navHtml = exports.navHtml = ({ language, chapters, title, nav, }, prefix = '')  => (engine`
 <?xml version="1.0" encoding="UTF-8" ?>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ops="http://www.idpf.org/2007/ops"
@@ -35,16 +35,16 @@ const navHtml = exports.navHtml = ({ language, chapters, title, nav, }, prefix) 
 </html>
 `);
 
-const containerXml = exports.containerXml = () => (engine`
+const containerXml = exports.containerXml = ({ opf, }) => (engine`
 <?xml version="1.0" encoding="UTF-8" ?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
 	<rootfiles>
-		<rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+		<rootfile full-path="OEBPS/${ opf.name }" media-type="${ opf.mimeType || 'application/oebps-package+xml' }"/>
 	</rootfiles>
 </container>
 `);
 
-const contentOpf = exports.contentOpf = ({ guid, language, title, description, creators, published, chapters, resources, nav, cover, }) => (engine`
+const contentOpf = exports.contentOpf = ({ guid, language, title, description, creators, published, chapters, resources, markNav, nav, cover, ncx, }) => (engine`
 <?xml version="1.0" encoding="UTF-8"?>
 <package version="3.0"
 	xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -83,9 +83,9 @@ const contentOpf = exports.contentOpf = ({ guid, language, title, description, c
 	</metadata>
 
 	<manifest>
-		<item id="ncx" href="content.ncx" media-type="application/x-dtbncx+xml"/>
+		<item id="ncx" href="${ ncx.name }" media-type="${ ncx.mimeType || 'application/x-dtbncx+xml' }"/>
 		${ ForEach(chapters) }
-		<item id="chapter${ Index }" href="${ Call(v => v.name) }" media-type="${ Call(v => v.mimeType) }"${ If(v => v.name === nav) } properties="nav"${ End.If }/>
+		<item id="chapter${ Index }" href="${ Call(v => v.name) }" media-type="${ Call(v => v.mimeType) }"${ If(markNav && (v => v === nav)) } properties="nav"${ End.If }/>
 		${ End.ForEach }
 		${ ForEach(resources) }
 		<item id="resource${ Index }" href="${ Call(v => v.name) }" media-type="${ Call(v => v.mimeType) }"/>
@@ -99,10 +99,10 @@ const contentOpf = exports.contentOpf = ({ guid, language, title, description, c
 	</spine>
 	<guide>
 		${ If(cover) }
-		<reference href="${ cover }" title="Cover" type="cover"/>
+		<reference href="${ cover.name }" title="${ cover.title }" type="cover"/>
 		${ End.If }
 		${ If(nav) }
-		<reference href="${ nav }" title="Table of Contents" type="toc"/>
+		<reference href="${ nav.name }" title="${ nav.title }" type="toc"/>
 		${ End.If }
 	</guide>
 </package>

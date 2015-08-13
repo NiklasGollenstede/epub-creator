@@ -22,12 +22,12 @@ ActionButton({
 		console.log('options', options);
 
 		const book = new EPub(options);
-		console.log('book', book);
+		// console.log('book', book);
 
 		yield(book.loadResources());
 		console.log('book', book);
 
-		book.save(null, viewFor(Windows.activeWindow).gBrowser.contentWindow);
+		book.save(viewFor(Windows.activeWindow).gBrowser.contentWindow);
 
 	}).catch(error => console.error('collection threw', error)),
 });

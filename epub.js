@@ -38,38 +38,61 @@ const EPub = exports.EPub = function EPub(options) {
 	);
 
 	[].concat(this.chapters, this.resources).forEach(entry => {
-		entry.name = entry.name.replace(/^oebps[\/\\]/i, '');
+		// entry.name = entry.name.replace(/^oebps[\/\\]/i, '');
 		!entry.mimeType && entry.name && (entry.mimeType = (entry.name.match(/\.\w+$/) || [0,'',])[1]);
 		entry.mimeType = mimeTypes[entry.mimeType] || entry.mimeType;
 	});
 
+	if (typeof this.cover === 'string') {
+		// this.cover = this.cover.replace(/^oebps[\/\\]/i, '');
+		this.cover = this.chapters.find(({ name, }) => name === this.cover);
+	}
+
 	if (typeof this.nav === 'string') {
-		this.nav = this.nav.replace(/^oebps[\/\\]/i, '');
-		const nav = this.chapters.find(({ name, }) => name === this.nav);
-		if (!nav) {
+		// this.nav = this.nav.replace(/^oebps[\/\\]/i, '');
+		this.nav = this.chapters.find(({ name, }) => name === this.nav);
+		if (!this.nav) {
 			this.nav = true;
-		} else if (!(/<nav[^>]*?ops:type="toc".*?>[^]*?<\/nav>/).test(nav.content)) { // invalid toc
-			nav.mimeType = 'application/xhtml+xml';
-			const prefix = nav.name.replace(/[^\/\\]+/g, '..').replace(/\.\.$/, '');
-			nav.content = log('replace', nav.name, 'with', Templates.navHtml(this, prefix));
+		} else if (!(/<nav[^>]*?ops:type="toc".*?>[^]*?<\/nav>/).test(this.nav.content)) { // invalid toc
+			this.nav.mimeType = 'application/xhtml+xml';
+			const prefix = this.nav.name.replace(/[^\/\\]+/g, '..').replace(/\.\.$/, '') || '';
+			this.nav.originalContent = this.nav.content;
+			this.nav.content = Templates.navHtml(this, prefix);
 		}
 	}
 
 	if (this.nav === true) {
-		this.chapters.unshift({
+		this.chapters.unshift(this.nav = {
 			name: 'nav.xhtml',
 			title: 'Table of Content',
 			mimeType: 'application/xhtml+xml',
-			content: log('nav.xml', Templates.navHtml(this)),
+			content: Templates.navHtml(this),
 		});
-		this.nav = 'nav.xhtml';
 	}
+
+	if (this.ncx !== false && typeof this.ncx !== 'object') {
+		this.ncx = {
+			name: 'content.ncx',
+			mimeType: 'application/x-dtbncx+xml',
+			content: Templates.contentNcx(this),
+		};
+	}
+
+	if (this.opf !== false && typeof this.opf !== 'object') {
+		this.opf = {
+			name: 'content.opf',
+			mimeType: 'application/oebps-package+xml',
+			content: Templates.contentOpf(this),
+		};
+	}
+
+	this.name = this.name || this.creators.find(it => it.role === 'author').name +' - '+ this.title +'.epub';
 };
 EPub.prototype = {
 	loadResources() {
 		if (!this.resources) { return Promise.resolve(); }
 		this.resources = this.resources.filter((r1, i, a) => i === a.findIndex(r2 => r2.name === r1.name));
-		return Promise.all(this.resources.map(
+		return Promise.all(this.resources.filter(resource => (resource.src || resource.url) && !resource.content).map(
 			resource => HttpRequest(Object.assign({
 				responseType: 'arraybuffer',
 				binary: true,
@@ -78,19 +101,19 @@ EPub.prototype = {
 				resource.content = arrayBufferToString(request.response);
 				resource.mimeType = request.getResponseHeader('content-type') || resource.mimeType;
 				resource.options = { binary: true, };
-				resource.name = resource.name || resource.src.match(/\/\/.*?\/(.*)$/)[1].replace(/^oebps[\/\\]/i, '');
-				console.log('resource', this.resources.indexOf(resource), resource);
+				resource.name = resource.name || resource.src.match(/\/\/.*?\/(.*)$/)[1]; //.replace(/^oebps[\/\\]/i, '');
 			})
-		));
+		))
+		.then(() => this.opf && (this.opf.content = Templates.contentOpf(this)));
 	},
 	zip() {
 		const zip = new JSZip();
 		zip.file('mimetype', 'application/epub+zip');
-		zip.folder('META-INF').file('container.xml', Templates.containerXml());
+		zip.folder('META-INF').file('container.xml', Templates.containerXml(this));
 
 		const oebps = zip.folder('OEBPS');
-		oebps.file('content.opf', log('content.opf', Templates.contentOpf(this)));
-		oebps.file('content.ncx', log('content.ncx', Templates.contentNcx(this)));
+		this.opf && oebps.file(this.opf.name, this.opf.content, this.opf.options);
+		this.ncx && oebps.file(this.ncx.name, this.ncx.content, this.ncx.options);
 
 		this.chapters
 			.forEach(({ name, content, options, }) => oebps.file(name, content, options));
@@ -100,11 +123,7 @@ EPub.prototype = {
 
 		return zip;
 	},
-	save(name, window) {
-		name = name || this.creators.find(it => it.role === 'author').name +' - '+ this.title +'.epub';
-
-		const zip = this.zip();
-
-		saveAs(zip, name, window);
+	save(window) {
+		saveAs(this.zip(), this.name, window);
 	},
 };
