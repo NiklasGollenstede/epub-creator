@@ -7,7 +7,6 @@ const { ActionButton, } = require("sdk/ui");
 
 const { concurrent: { spawn, }, functional: { log, }, } = require('es6lib');
 
-const { collect, } = require('./collect.js');
 const { EPub, } = require('./epub.js');
 
 const runInTab = require('es6lib/runInTab');
@@ -18,7 +17,18 @@ ActionButton({
 	icon: { 16: './../icon.png', 32: './../icon.png', 64: './../icon.png', },
 	onClick: () => spawn(function*() {
 
-		const options = yield(runInTab(Tabs.activeTab, [ './../collect.js', ], () => (require("collect/overdrive")())));
+		const tab = Tabs.activeTab;
+
+		let options;
+		if (/about\:reader\?url\=/.test(tab.url)) {
+			options = yield(runInTab(tab, './../collect/aboutReader.js', () => (require("collect/aboutReader")())));
+		} else if (/https:\/\/[^\/]*read\.overdrive\.com/.test(tab.url)) {
+			options = yield(runInTab(tab, './../collect/overdrive.js', () => (require("collect/overdrive")())));
+		} else {
+			yield runInTab(tab, () => window.alert('Page not supported'));
+			throw new Error('ePub collection not supported for: "'+ tab.url +'"');
+		}
+
 		console.log('options', options);
 
 		const book = new EPub(options);

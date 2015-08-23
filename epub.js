@@ -33,8 +33,11 @@ const EPub = exports.EPub = function EPub(options) {
 
 	this.chapters.forEach(chapter =>
 		chapter.mimeType == 'text/html-body'
-		&& (chapter.content = Templates.htmlFrame(chapter.content))
-		&& (chapter.mimeType = 'text/html')
+		&& (chapter.content = Templates.htmlFrame(chapter))
+		&& (chapter.mimeType = mimeTypes.html)
+		|| chapter.mimeType == 'text/xhtml-body'
+		&& (chapter.content = Templates.xhtmlFrame(chapter))
+		&& (chapter.mimeType = mimeTypes.xhtml)
 	);
 
 	[].concat(this.chapters, this.resources).forEach(entry => {
@@ -95,7 +98,6 @@ EPub.prototype = {
 		return Promise.all(this.resources.filter(resource => (resource.src || resource.url) && !resource.content).map(
 			resource => HttpRequest(Object.assign({
 				responseType: 'arraybuffer',
-				// binary: true,
 			}, resource))
 			.then(request => {
 				resource.content = arrayBufferToString(request.response);

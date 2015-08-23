@@ -4,9 +4,9 @@
 const {
 	TemplateEngine,  ForEach, ForOf, While, If, Value, Index, Key, Call, Predicate, End, NoMap,
 	escape: { escapeHtml, removeTags, }
-} = require('./node_modules/es6lib/template/index.js');
+} = require('es6lib/template');
 
-const engine = TemplateEngine({ trim: 'front parts strong', mapper: escapeHtml, });
+const engine = TemplateEngine({ trim: 'front parts', mapper: escapeHtml, });
 
 const navHtml = exports.navHtml = ({ language, chapters, title, nav, }, prefix = '')  => (engine`
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -97,6 +97,7 @@ const contentOpf = exports.contentOpf = ({ guid, language, title, description, c
 		<itemref idref="chapter${ Index }"/>
 		${ End.ForEach }
 	</spine>
+	${ If(cover || nav) }
 	<guide>
 		${ If(cover) }
 		<reference href="${ cover.name }" title="${ cover.title }" type="cover"/>
@@ -105,6 +106,7 @@ const contentOpf = exports.contentOpf = ({ guid, language, title, description, c
 		<reference href="${ nav.name }" title="${ nav.title }" type="toc"/>
 		${ End.If }
 	</guide>
+	${ End.If }
 </package>
 `);
 
@@ -125,7 +127,7 @@ const contentNcx = exports.contentNcx = ({ guid, language, title, description, c
 	</docAuthor>
 	<navMap>
 		${ ForEach(chapters) }
-		<navPoint playOrder="${ Index }" id="chapter${ Index }">
+		<navPoint playOrder="${ Call([Index], i => i+1) }" id="chapter${ Call([Index], i => i+1) }">
 			<navLabel>
 				<text>${ Call(v => v.title) }</text>
 			</navLabel>
@@ -136,13 +138,28 @@ const contentNcx = exports.contentNcx = ({ guid, language, title, description, c
 </ncx>
 `);
 
-const htmlFrame = exports.htmlFrame = (content) => (`
+const htmlFrame = exports.htmlFrame = ({ content, title, }) => (engine`
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>${ title }</title>
 	</head>
 	<body>
-${ content }
+${ NoMap(content) }
+	</body>
+</html>
+`);
+
+const xhtmlFrame = exports.xhtmlFrame = ({ content, title, }) => (engine`
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<title>${ title }</title>
+	</head>
+	<body>
+${ NoMap(content) }
 	</body>
 </html>
 `);
