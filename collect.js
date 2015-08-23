@@ -44,11 +44,11 @@ exports = function collect() {
 			Array.forEach(doc.querySelectorAll('img'), img => !img.alt && (img.alt = 'IMAGE'));
 
 			const name = (doc.querySelector('base') && doc.querySelector('base').href.match(/^.*?:\/\/.*?\/(.*?)$/) || [])[1];
-			const navToc = name && findRecursive(bData.nav.toc, ({ path, }) => (path.substring(0, path.indexOf('?')) || path) === name, 'contents');
-			const spine = name && findRecursive(bData.spine, ({ path, }) => (path.substring(0, path.indexOf('?')) || path) === name, 'contents');
-			const title = navToc && navToc.title || (doc.querySelector('h1, h2, h3, h4') || { textContent: '<unnamed>', }).textContent;
+			const navToc = name && findRecursive(bData.nav.toc, ({ path, }) => (path.replace(/[?#].*/, '')) === name, 'contents');
+			const spine = name && findRecursive(bData.spine, ({ path, }) => (path.replace(/[?#].*/, '')) === name, 'contents');
+			const title = navToc && navToc.title || (doc.querySelector('h1, h2, h3, h4') || { textContent: '', }).textContent;
 
-			doc.querySelector('head').innerHTML = `<title>${ doc.querySelector('title') && doc.querySelector('title').innerHTML }</title>`;
+			doc.querySelector('head').innerHTML = `<title>${ doc.querySelector('title') && doc.querySelector('title').innerHTML || '' }</title>`;
 
 			if (!nav && (
 				name && (/^(content|contents|nav|navigation|inhalt)$/i).test((name.match(/\/(.*?)\.\w{1,10}$/) || [ '', '' ])[1])
@@ -71,8 +71,8 @@ exports = function collect() {
 					.replace(/(<[^>]+?) ?class=""/g, '$1')
 					.replace(/(<[^>]+?) ?style=""/g, '$1')
 					.replace(/(<[^>]+?) ?data-loc="\d*"/g, '$1')
-					.replace(/<img.*?>/g, m => m +'</img>') //(m, i, s) => s.startsWith('</img>', m.length + i) ? m : m + '</img>')
-					.replace(/<br.*?>/g, m => m +'</br>') //(m, i, s) => s.startsWith('</br>', m.length + i) ? m : m + '</br>')
+					.replace(/<img.*?>/g, m => m +'</img>')
+					.replace(/<br.*?>/g, m => m +'</br>')
 					.replace(/&nbsp;/g, ' '),
 				mimeType: spine && spine['media-type'] || ((doc.doctype && doc.doctype.name || 'xhtml')),
 				linear: spine && spine.linear,

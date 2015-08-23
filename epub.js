@@ -95,7 +95,7 @@ EPub.prototype = {
 		return Promise.all(this.resources.filter(resource => (resource.src || resource.url) && !resource.content).map(
 			resource => HttpRequest(Object.assign({
 				responseType: 'arraybuffer',
-				binary: true,
+				// binary: true,
 			}, resource))
 			.then(request => {
 				resource.content = arrayBufferToString(request.response);
@@ -104,7 +104,7 @@ EPub.prototype = {
 				resource.name = resource.name || resource.src.match(/\/\/.*?\/(.*)$/)[1]; //.replace(/^oebps[\/\\]/i, '');
 			})
 		))
-		.then(() => this.opf && (this.opf.content = Templates.contentOpf(this)));
+		.then(() => { typeof this.opf === 'object' && (this.opf.content = Templates.contentOpf(this)); });
 	},
 	zip() {
 		const zip = new JSZip();
@@ -112,14 +112,15 @@ EPub.prototype = {
 		zip.folder('META-INF').file('container.xml', Templates.containerXml(this));
 
 		const oebps = zip.folder('OEBPS');
-		this.opf && oebps.file(this.opf.name, this.opf.content, this.opf.options);
-		this.ncx && oebps.file(this.ncx.name, this.ncx.content, this.ncx.options);
 
-		this.chapters
-			.forEach(({ name, content, options, }) => oebps.file(name, content, options));
-		this.resources
-			.filter(({ content, }) => content)
-			.forEach(({ name, content, options, }) => oebps.file(name, content, options));
+		[
+			this.opf,
+			this.ncx,
+		].concat(
+			this.chapters,
+			this.resources.filter(({ content, }) => content)
+		)
+		.forEach(({ name, content, options, }) => oebps.file(name, content, options));
 
 		return zip;
 	},
