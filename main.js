@@ -13,31 +13,47 @@ const runInTab = require('es6lib/runInTab');
 
 ActionButton({
 	id: 'button',
-	label: 'Button',
+	label: 'Save book',
 	icon: { 16: './../icon.png', 32: './../icon.png', 64: './../icon.png', },
-	onClick: () => spawn(function*() {
+	onClick: function() {
+		spawn(function*() {
+			this.progress('Collecting data', 0, true);
+			const tab = Tabs.activeTab;
+			let options;
+			if (/about\:reader\?url\=/.test(tab.url)) {
+				options = yield(runInTab(tab, './../collect/aboutReader.js', () => (require("collect/aboutReader")())));
+			} else if (/https:\/\/[^\/]*read\.overdrive\.com/.test(tab.url)) {
+				options = yield(runInTab(tab, './../collect/overdrive.js', () => (require("collect/overdrive")())));
+			} else {
+				yield(runInTab(tab, [], () => window.alert('Page not supported')));
+				throw new Error('ePub collection not supported for: "'+ tab.url +'"');
+			}
+			console.log('options', options);
 
-		const tab = Tabs.activeTab;
+			this.progress('Building book', 30);
+			const book = new EPub(options);
 
-		let options;
-		if (/about\:reader\?url\=/.test(tab.url)) {
-			options = yield(runInTab(tab, './../collect/aboutReader.js', () => (require("collect/aboutReader")())));
-		} else if (/https:\/\/[^\/]*read\.overdrive\.com/.test(tab.url)) {
-			options = yield(runInTab(tab, './../collect/overdrive.js', () => (require("collect/overdrive")())));
-		} else {
-			yield runInTab(tab, () => window.alert('Page not supported'));
-			throw new Error('ePub collection not supported for: "'+ tab.url +'"');
-		}
+			this.progress('Loading images', 50);
+			yield(book.loadResources());
+			console.log('book', book);
 
-		console.log('options', options);
+			this.progress('Saving file', 80);
+			book.save(viewFor(Windows.activeWindow).gBrowser.contentWindow);
 
-		const book = new EPub(options);
-		// console.log('book', book);
-
-		yield(book.loadResources());
-		console.log('book', book);
-
-		book.save(viewFor(Windows.activeWindow).gBrowser.contentWindow);
-
-	}).catch(error => console.error('collection threw', error)),
-});
+		}, this)
+		.catch(error => console.error('collection threw', error))
+		.then(() => this.progress('Save book', null, false));
+	},
+})
+.progress = function(label, badge, disabled) {
+	switch (arguments.length) {
+		default:
+		case 3: this.disabled = disabled;
+		/* falls through */
+		case 2: this.badge = badge;
+		/* falls through */
+		case 1: this.label = label;
+		/* falls through */
+		case 0:
+	}
+};
