@@ -1,6 +1,11 @@
 (function(exports) { 'use strict';
 
+/**
+ * Collects the book contents from the online reader of overdrive.com.
+ * @return {object} Options that can be passed as argument to the EPub constructor.
+ */
 exports = function collect() {
+	// use JSON.parse to avoid manipulated objects
 	const bData = JSON.parse(document.head.querySelector('script:not([src])').innerHTML.match(/^[ \t]*?window.bData = (.*);$/m)[1]);
 
 	const findRecursive = (array, test, key) => {
@@ -27,22 +32,24 @@ exports = function collect() {
 
 	return ({
 		chapters: Array.map(document.querySelectorAll('.bounds>iframe'), (frame, index) => {
+			// clone iframe document and leave the original untouched
 			const doc = frame.contentDocument.documentElement.cloneNode(true);
-			// console.log('doc', doc.innerHTML);
-			doc.setAttribute('xmlns', "http:\/\/www.w3.org/1999/xhtml");
 
+
+			// find linked images
 			resources.push(...Array.map(doc.querySelectorAll('img'), ({ src, }) => ({ src, name: src.match(/:\/\/.*?\/(.*)$/)[1], })));
 
+			// html clean-up
+			doc.setAttribute('xmlns', "http:\/\/www.w3.org/1999/xhtml");
 			Array.forEach(doc.querySelectorAll('[data-loc]'), div => {
 				delete div.dataset.loc;
 				div.style = null;
 				div.className = '';
 			});
-
 			Array.forEach(doc.querySelectorAll('style, link, menu'), element => element.remove());
-
 			Array.forEach(doc.querySelectorAll('img'), img => !img.alt && (img.alt = 'IMAGE'));
 
+			// find meta data
 			const name = (doc.querySelector('base') && doc.querySelector('base').href.match(/^.*?:\/\/.*?\/(.*?)$/) || [])[1];
 			const navToc = name && findRecursive(bData.nav.toc, ({ path, }) => (path.replace(/[?#].*/, '')) === name, 'contents');
 			const spine = name && findRecursive(bData.spine, ({ path, }) => (path.replace(/[?#].*/, '')) === name, 'contents');
@@ -50,6 +57,7 @@ exports = function collect() {
 
 			doc.querySelector('head').innerHTML = `<title>${ doc.querySelector('title') && doc.querySelector('title').innerHTML || '' }</title>`;
 
+			// check if this document represents the (first) cover or ToC
 			if (!nav && (
 				name && (/^(content|contents|nav|navigation|inhalt)$/i).test((name.match(/\/(.*?)\.\w{1,10}$/) || [ '', '' ])[1])
 				|| title && (/^(content|contents|nav|navigation|inhalt)$/i).test(title)
@@ -67,7 +75,7 @@ exports = function collect() {
 			return ({
 				name: name || 'unnamed'+ index +'.html',
 				title,
-				content: doc.outerHTML
+				content: doc.outerHTML // more html clean-up and turn html into xhtml
 					.replace(/(<[^>]+?) ?class=""/g, '$1')
 					.replace(/(<[^>]+?) ?style=""/g, '$1')
 					.replace(/(<[^>]+?) ?data-loc="\d*"/g, '$1')
@@ -77,7 +85,7 @@ exports = function collect() {
 				mimeType: spine && spine['media-type'] || ((doc.doctype && doc.doctype.name || 'xhtml')),
 				linear: spine && spine.linear,
 			});
-		}),
+		}), // chapters
 		title: bData.title.main,
 		description: bData.description,
 		language: bData.language,

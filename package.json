@@ -1,19 +1,25 @@
 {
 	"name": "epub",
 	"title": "ePub Creator",
+	"description": "Creates ePub e-book files from web pagesCurrently supports Firefox'es reader mode and 'overdrive.com's online reader.",
 	"author": "Niklas Gollenstede",
 	"license": "MPL 2.0",
-	"version": "0.1.2",
+	"version": "0.2.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/NiklasGollenstede/es6lib"
 	},
 	"dependencies": {
-		"babel": "latest",
-		"command-line-args": "latest",
-		"electron-prebuilt": "latest",
-		"jszip": "latest",
 		"es6lib": "NiklasGollenstede/es6lib"
 	},
-	"main": "main.js"
+	"main": "main.js",
+	"preferences": [
+		{
+			"name": "setNavProperty",
+			"title": "Set 'nav' property",
+			"description": "Standard compliant when set, but disables the navigation in Sumatra PDF",
+			"type": "bool",
+			"value": false
+		}
+	]
 }

@@ -1,6 +1,12 @@
 'use strict';
 (function(global) {
 
+/**
+ * This file contains the xml templates necessary to create an ePub file.
+ * All values that are not explicitly wrapped in NoMap() calls will be html-escaped by the TemplateEngine.
+ * All templates expect an EPub instance (or a chapter) as their first argument.
+ */
+
 const {
 	TemplateEngine,  ForEach, ForOf, While, If, Value, Index, Key, Call, Predicate, End, NoMap,
 	escape: { escapeHtml, removeTags, }
@@ -25,7 +31,7 @@ const navHtml = exports.navHtml = ({ language, chapters, title, nav, }, prefix =
 				${ If(nav === true)}
 				<li><a href="nav.xhtml">${ 'Table of Content' }</a></li>
 				${ End.If }
-				${ ForEach(chapters) }
+				${ ForEach(chapters.filter(v => v.name)) }
 				<li><a href="${ Call(v => prefix + v.name) }">${ Call(v => v.title) }</a></li>
 				${ End.ForEach }
 			</ol>

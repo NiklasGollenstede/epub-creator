@@ -1,7 +1,9 @@
 (function(exports) { 'use strict';
 
-
-
+/**
+ * Collects the contents of an about:reader view.
+ * @return {object} Options that can be passed as argument to the EPub constructor.
+ */
 exports = function collect() {
 
 	const doc = document.querySelector('#container').cloneNode(true);
@@ -31,7 +33,7 @@ exports = function collect() {
 		title,
 		description: `Offline reader version of [${ doc.querySelector('#reader-domain').href }]`,
 		language: null,
-		creator: [ ],
+		creator: [ ], // TODO: try to extract meta data
 		resources,
 		cover: false,
 		nav: false,
