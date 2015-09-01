@@ -20,7 +20,7 @@ const navHtml = exports.navHtml = ({ language, chapters, title, nav, }, prefix =
 	xmlns:ops="http://www.idpf.org/2007/ops"
 	xml:lang="${ language }">
 	<head>
-		<title>${ 'Table of Content' }</title>
+		<title>${ nav && nav.title || 'Table of Content' }</title>
 	</head>
 	<body>
 		<nav ops:type="toc">
@@ -31,7 +31,7 @@ const navHtml = exports.navHtml = ({ language, chapters, title, nav, }, prefix =
 				${ If(nav === true)}
 				<li><a href="nav.xhtml">${ 'Table of Content' }</a></li>
 				${ End.If }
-				${ ForEach(chapters.filter(v => v.name)) }
+				${ ForEach(chapters.filter(v => v.name && v.title)) }
 				<li><a href="${ Call(v => prefix + v.name) }">${ Call(v => v.title) }</a></li>
 				${ End.ForEach }
 			</ol>

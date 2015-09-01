@@ -32,7 +32,6 @@ const Templates = require('./templates.js');
  *     @property {array} resources   Array of objects describing (external) resources to include. Same parameters as chapters, plus:
  *         @property {string} src        Specifies the resources url if 'content' is empty.
  *         @property {object} options    If the recourse is externally loaded, these options are also passed to the HttpRequest.
- *         @see
  *     @property {string}  cover     Name of the cover page. Optional.
  *     @property {string}  nav       Name of the table of contents. Optional. If set but not ePub 3 compliant, it will be replaced a generated toc.
  *     @property {object}  ncx       Object { name, contents, mimeType, } describing the ePub's .ncx file. Default: auto-generated.

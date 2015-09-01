@@ -16,17 +16,16 @@ exports = function collect() {
 		img.src = img.src.match(/:\/\/.*?\/(.*)$/)[1];
 	});
 	Array.forEach(doc.querySelectorAll('style, link, menu'), element => element.remove());
+	Array.forEach(doc.querySelectorAll('*'), element => {
+		element.removeAttribute('style');
+		element.removeAttribute('class');
+	});
 
 	return ({
 		chapters: [ {
 			name: 'content.xhtml',
 			title,
-			content: doc.outerHTML
-				.replace(/(<[^>]+?) ?class=""/g, '$1')
-				.replace(/(<[^>]+?) ?style=""/g, '$1')
-				.replace(/<img.*?>/g, m => m +'</img>')
-				.replace(/<br.*?>/g, m => m +'</br>')
-				.replace(/&nbsp;/g, ' '),
+			content: toXML(doc),
 			mimeType: 'text/xhtml-body',
 			linear: true,
 		}, ],
@@ -39,5 +38,10 @@ exports = function collect() {
 		nav: false,
 	});
 };
+
+const serializer = new XMLSerializer;
+function toXML(element) {
+	return serializer.serializeToString(element);
+}
 
 const moduleName = 'collect/aboutReader'; if (typeof module !== 'undefined') { module.exports = exports; } else if (typeof define === 'function') { define(moduleName, exports); } else if (typeof window !== 'undefined' && typeof module === 'undefined') { window[moduleName] = exports; } return exports; })({ });

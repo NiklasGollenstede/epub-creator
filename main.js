@@ -12,10 +12,6 @@ const { EPub, } = require('./epub.js');
 
 const runInTab = require('es6lib/runInTab');
 
-const defaultOptions = {
-	markNav: Prefs.setNavProperty,
-};
-
 /**
  * Adds a toolbar button that starts the ebook saving/download when clicked while a supported url os open in the activeTab.
  */
@@ -40,7 +36,7 @@ ActionButton({
 			// console.log('options', options);
 
 			this.progress('Building book', 30);
-			const book = new EPub(Object.assign(options, defaultOptions));
+			const book = new EPub(Object.assign(options, { markNav: Prefs.setNavProperty, }));
 
 			this.progress('Loading images', 50);
 			yield(book.loadResources());
