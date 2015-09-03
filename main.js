@@ -26,9 +26,9 @@ ActionButton({
 			const tab = Tabs.activeTab;
 			let options;
 			if (/about\:reader\?url\=/.test(tab.url)) {
-				options = yield(runInTab(tab, './../collect/aboutReader.js', () => (require("collect/aboutReader")())));
+				options = yield(runInTab(tab, './../collect/aboutReader.js', o => (require("collect/aboutReader")(o)), { styles: Prefs.collectStyles, }));
 			} else if (/https:\/\/[^\/]*read\.overdrive\.com/.test(tab.url)) {
-				options = yield(runInTab(tab, './../collect/overdrive.js', () => (require("collect/overdrive")())));
+				options = yield(runInTab(tab, './../collect/overdrive.js', o => (require("collect/overdrive")(o)), { styles: Prefs.collectStyles, }));
 			} else {
 				viewFor(Windows.activeWindow).alert('Page not supported, try opening the Reader View.');
 				throw new Error('ePub collection not supported for: "'+ tab.url +'"');

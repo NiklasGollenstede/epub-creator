@@ -4,7 +4,8 @@
  * Collects the book contents from the online reader of overdrive.com.
  * @return {object} Options that can be passed as argument to the EPub constructor.
  */
-exports = function collect() {
+exports = function collect(options) {
+	console.log('collect arguments', arguments);
 	// use JSON.parse to avoid manipulated objects
 	const bData = JSON.parse(document.head.querySelector('script:not([src])').innerHTML.match(/^[ \t]*?window.bData = (.*);$/m)[1]);
 
@@ -35,7 +36,7 @@ exports = function collect() {
 				const index = styles.get(style);
 				element.removeAttribute('style');
 				element.removeAttribute('data-loc');
-				if (index) {
+				if (index && options.styles) {
 					element.className = 'inline'+ index;
 				} else {
 					element.removeAttribute('class');
@@ -56,11 +57,11 @@ exports = function collect() {
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>
 			${ String.trim(doc.querySelector('title') && doc.querySelector('title').innerHTML || '') }
-		</title>`) + (css && `
+		</title>`) + (options.styles && css && `
 		<style id="inlinetyles" type="text/css">
 			${ String.trim(css) }
 		</style>
-`);
+` || '');
 
 			// check if this document represents the (first) cover or ToC
 			if (!nav && (
