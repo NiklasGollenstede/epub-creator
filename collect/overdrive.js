@@ -54,7 +54,7 @@ exports = function collect(options) {
 
 			// TODO: use something nicer than 'innerHTML ='
 			doc.querySelector('head').innerHTML = (`
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>
 			${ String.trim(doc.querySelector('title') && doc.querySelector('title').innerHTML || '') }
 		</title>`) + (options.styles && css && `
@@ -95,7 +95,6 @@ exports = function collect(options) {
 		nav: nav || true,
 	});
 };
-
 
 function findRecursive(array, test, key) {
 	let result;
