@@ -8,11 +8,11 @@
  */
 
 const {
-	TemplateEngine,  ForEach, ForOf, While, If, Value, Index, Key, Call, Predicate, End, NoMap,
-	escape: { escapeHtml, removeTags, }
-} = require('es6lib/template');
+	template: { TemplateEngine,  ForEach, ForOf, While, If, Value, Index, Key, Call, Predicate, End, NoMap, },
+	string: { escapeHtml, removeTags, }
+} = require('es6lib');
 
-const engine = TemplateEngine({ trim: 'front parts', mapper: escapeHtml, });
+const engine = TemplateEngine({ trim: 'front parts', mapper: s => escapeHtml((s+'') || ''), });
 
 const navHtml = exports.navHtml = ({ language, chapters, title, nav, }, prefix = '')  => (engine`
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -145,6 +145,7 @@ const contentNcx = exports.contentNcx = ({ guid, language, title, description, c
 `);
 
 const htmlFrame = exports.htmlFrame = ({ content, title, }) => (engine`
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">

@@ -1,13 +1,13 @@
-(function(exports) { 'use strict';
+(function() { 'use strict';
 
 /**
  * Collects the book contents from the online reader of overdrive.com.
  * @return {object} Options that can be passed as argument to the EPub constructor.
  */
-exports = function collect(options) {
+window.collect = function collect(options = { }) {
 	console.log('collect arguments', arguments);
 	// use JSON.parse to avoid manipulated objects
-	const bData = JSON.parse(document.head.querySelector('script:not([src])').innerHTML.match(/^[ \t]*?window.bData = (.*);$/m)[1]);
+	const bData = JSON.parse(JSON.stringify(window.wrappedJSObject.bData));
 
 	const resources = [ ];
 	let nav = false;
@@ -119,4 +119,4 @@ function toXML(element) {
 	return serializer.serializeToString(element);
 }
 
-const moduleName = 'collect/overdrive'; if (typeof module !== 'undefined') { module.exports = exports; } else if (typeof define === 'function') { define(moduleName, exports); } else if (typeof window !== 'undefined' && typeof module === 'undefined') { window[moduleName] = exports; } return exports; })({ });
+})();

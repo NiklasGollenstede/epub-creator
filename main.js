@@ -1,58 +1,65 @@
-'use strict';
+(function(global) { 'use strict'; const factory = function mail(exports) { // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { viewFor } = require("sdk/view/core");
-const Windows = require("sdk/windows").browserWindows;
-const Tabs = require("sdk/tabs");
-const { ActionButton, } = require("sdk/ui");
-const Prefs = require("sdk/simple-prefs").prefs;
+require('chrome').Cu.importGlobalProperties([ 'URL', ]); /* globals URL */
 
-const { concurrent: { spawn, sleep, }, functional: { log, }, } = require('es6lib');
-
-const { EPub, } = require('./epub.js');
-
-const runInTab = require('es6lib/runInTab');
+const {
+	concurrent: { async, sleep, },
+	functional: { log, },
+} = require('es6lib');
 
 /**
  * Adds a toolbar button that starts the ebook saving/download when clicked while a supported url os open in the activeTab.
  */
-ActionButton({
+new (require('sdk/ui').ActionButton)({
 	id: 'button',
 	label: 'Save as ePub',
 	icon: { 16: './../icon.png', 32: './../icon.png', 64: './../icon.png', },
-	onClick: function() {
-		spawn(function*() {
+	onClick: async(function*() {
+		const { viewFor } = require('sdk/view/core');
+		const Windows = require('sdk/windows').browserWindows;
+		const Tabs = require('sdk/tabs');
+		const Prefs = require('sdk/simple-prefs').prefs;
+		try {
+			const { EPub, } = require('./epub.js');
+			const runInTab = require('es6lib/runInTab');
 
 			this.progress('Collecting data', 0, true);
 			const tab = Tabs.activeTab;
-			let options;
+			let collector;
 			if (/about\:reader\?url\=/.test(tab.url)) {
-				options = yield(runInTab(tab, './../collect/aboutReader.js', o => (require("collect/aboutReader")(o)), { styles: Prefs.collectStyles, }));
+				collector = './../collect/aboutReader.js';
 			} else if (/https:\/\/[^\/]*read\.overdrive\.com/.test(tab.url)) {
-				options = yield(runInTab(tab, './../collect/overdrive.js', o => (require("collect/overdrive")(o)), { styles: Prefs.collectStyles, }));
+				collector = './../collect/overdrive.js';
 			} else {
-				viewFor(Windows.activeWindow).alert('Page not supported, try opening the Reader View.');
-				throw new Error('ePub collection not supported for: "'+ tab.url +'"');
+				if (viewFor(Windows.activeWindow).confirm(`\tPage not supported.\n\tDo you want to open the Reader View to try again?`)) {
+					tab.url = 'about:reader?url='+ tab.url;
+				} return;
 			}
+			const options = (yield runInTab(tab, collector, o => window.collect(o), { styles: Prefs.collectStyles, }));
 			// console.log('options', options);
 
 			this.progress('Building book', 30);
 			const book = new EPub(Object.assign(options, { markNav: Prefs.setNavProperty, }));
 
 			this.progress('Loading images', 50);
-			yield(book.loadResources());
+			(yield book.loadResources());
 			// console.log('book', book);
 
 			this.progress('Saving file', 80);
-			book.save(viewFor(Windows.activeWindow).gBrowser.contentWindow); // will break with s10s, is there an alternative way of opening the download dialog?
+
+			(yield runInTab(tab, './../node_modules/es6lib/dom.js', (url, name) => {
+				es6lib_dom.saveAs(url, name);
+			}, book.toDataURL(), book.name));
 
 			this.progress('Book saved', 100);
-			console.info('Saved ePub as', book.name);
-			yield(sleep(1500));
-
-		}, this)
-		.catch(error => console.error('collection threw', error))
-		.then(() => this.progress('Save as ePub', null, false));
-	},
+		} catch(error) {
+			if (error && error.message === '__MSG__Operation_canceled') { return console.log('canceled'); }
+			console.error('collection threw', error);
+			viewFor(Windows.activeWindow).alert('Something went wrong: '+ (error.message || error.name || error.constructor.name || error.stack));
+		} finally {
+			this.progress('Save as ePub', null, false);
+		}
+	}),
 })
 .progress = function(label, badge, disabled) {
 	switch (arguments.length) {
@@ -66,3 +73,6 @@ ActionButton({
 		case 0:
 	}
 };
+
+
+}; if (typeof define === 'function' && define.amd) { define([ 'exports', ], factory); } else { const exports = { }, result = factory(exports) || exports; if (typeof exports === 'object' && typeof module === 'object') { module.exports = result; } else { global[factory.name] = result; } } })((function() { return this; })());
