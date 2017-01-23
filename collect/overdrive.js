@@ -5,7 +5,7 @@
  * @return {object} Options that can be passed as argument to the EPub constructor.
  */
 window.collect = function collect(options = { }) {
-	console.log('collect arguments', arguments);
+
 	// use JSON.parse to avoid manipulated objects
 	const bData = JSON.parse(JSON.stringify(window.wrappedJSObject.bData));
 

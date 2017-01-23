@@ -117,9 +117,11 @@ EPub.prototype = {
 	 * @return {Promise}  Promise that resolves to this.
 	 */
 	loadResources() {
-		if (!this.resources) { return Promise.resolve(); }
-		this.resources = this.resources.filter((r1, i, a) => i === a.findIndex(r2 => r2.name === r1.name));
-		return Promise.all(this.resources.filter(resource => (resource.src || resource.url) && !resource.content).map(
+		if (!this.resources) { return Promise.resolve(this); }
+		this.resources = this.resources.filter((r1, i, a) => i === a.findIndex(r2 => (r1.name || r1.src) === (r2.name || r2.src)));
+		return Promise.all(this.resources.filter(
+			resource => (resource.src || resource.url) && !resource.content
+		).map(
 			resource => HttpRequest((resource.src || resource.url), Object.assign({
 				responseType: 'arraybuffer',
 			}, resource.options))
@@ -130,7 +132,10 @@ EPub.prototype = {
 				resource.name = resource.name || resource.src.match(/\/\/.*?\/(.*)$/)[1]; //.replace(/^oebps[\/\\]/i, '');
 			})
 		))
-		.then(() => typeof this.opf === 'object' && (this.opf.content = Templates.contentOpf(this)) && this || this);
+		.then(() => {
+			typeof this.opf === 'object' && (this.opf.content = Templates.contentOpf(this));
+			return this;
+		});
 	},
 	/**
 	 * Used JSZip to pack all specified and processed files.
