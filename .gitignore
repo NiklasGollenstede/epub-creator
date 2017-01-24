@@ -1,6 +1,6 @@
 *.xpi
+*.zip
 node_modules
-bin
-target
-out
 npm-debug.log
+/build/
+/update/*/versions.json

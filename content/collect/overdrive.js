@@ -1,34 +1,42 @@
-(function() { 'use strict';
+(function() { 'use strict'; define(function({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	'node_modules/web-ext-utils/inject': { inject, },
+	module,
+}) {
+
+const { call, } = (_=>_); // i.e. Function.prototype
+const forEach = call.bind(Array.prototype.forEach);
+const filter  = call.bind(Array.prototype.filter);
+const map  = call.bind(Array.prototype.map);
 
 /**
  * Collects the book contents from the online reader of overdrive.com.
  * @return {object} Options that can be passed as argument to the EPub constructor.
  */
-window.collect = function collect(options = { }) {
+module.exports = function collect(options = { }) {
 
-	// use JSON.parse to avoid manipulated objects
-	const bData = JSON.parse(JSON.stringify(window.wrappedJSObject.bData));
+	// get a JSON clone of  window.wrappedJSObject.bData
+	const bData = inject(function() { return this.bData; });
 
 	const resources = [ ];
 	let nav = false;
 	let cover = false;
 
 	return ({
-		chapters: Array.map(document.querySelectorAll('.bounds>iframe'), (frame, index) => {
+		chapters: map(document.querySelectorAll('.bounds>iframe'), (frame, index) => {
 			// clone iframe document and leave the original untouched
 			const doc = frame.contentDocument.documentElement.cloneNode(true);
 
 			// find linked images
-			resources.push(...Array.map(doc.querySelectorAll('img'), ({ src, }) => ({ src, name: src.match(/:\/\/.*?\/(.*)$/)[1], })));
+			resources.push(...map(doc.querySelectorAll('img'), ({ src, }) => ({ src, name: src.match(/:\/\/.*?\/(.*)$/)[1], })));
 
 			// html clean-up
 			doc.setAttribute('xmlns', "http://www.w3.org/1999/xhtml");
-			Array.forEach(doc.querySelectorAll('style, link, menu'), element => element.remove());
-			Array.forEach(doc.querySelectorAll('img'), img => !img.alt && (img.alt = 'IMAGE'));
+			forEach(doc.querySelectorAll('style, link, menu'), element => element.remove());
+			forEach(doc.querySelectorAll('img'), img => !img.alt && (img.alt = 'IMAGE'));
 
 			const styles = new Map([[ '', 0, ]]);
 
-			Array.forEach(doc.querySelectorAll('*'), element => {
+			forEach(doc.querySelectorAll('*'), element => {
 				const style = element.getAttribute('style');
 				if (style && !styles.has(style)) {
 					styles.set(style, styles.size);
@@ -56,10 +64,10 @@ window.collect = function collect(options = { }) {
 			doc.querySelector('head').innerHTML = (`
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>
-			${ String.trim(doc.querySelector('title') && doc.querySelector('title').innerHTML || '') }
+			${ (doc.querySelector('title') && doc.querySelector('title').innerHTML || '').trim() }
 		</title>`) + (options.styles && css && `
 		<style id="inlinetyles" type="text/css">
-			${ String.trim(css) }
+			${ css.trim() }
 		</style>
 ` || '');
 
@@ -119,4 +127,4 @@ function toXML(element) {
 	return serializer.serializeToString(element);
 }
 
-})();
+}); })();

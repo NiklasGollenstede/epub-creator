@@ -1,31 +1,35 @@
 {
-	"indent": 1,
+	"indent": 1, // indent with tabs
 	"-W002": false, // Value of '{cought exception}' may be overwritten in IE 8 and earlier.
 	"-W006": false, // Confusing minuses.
 	"-W030": false, // Expected an assignment or function call and instead saw an expression.
+	"-W034": false, // Unnecessary directive "use strict".
 	"-W054": false, // The Function constructor is a form of eval.
 	"-W058": false, // Missing '()' invoking a constructor.
-	"-W093": false, // Did you mean to return a conditional instead of an assignment?
+	"-W078": false, // Setter is defined without getter.
 
-	"curly": true,
-	"newcap": false,
-	"undef": false,
-	"eqnull": true,
-	"laxbreak": true,
+	"curly": true, // always require blocks with curly braces in control flow statements
+	"elision": true, // allow empty array entries [ , , ]
+	"eqeqeq": true, // enforce === instead of ==
+	"eqnull": true, // allow `== null` and `!= null` as exception of 'eqeqeq'
+	"laxbreak": true, // allow 'possibly unsafe line breakings'
+	"loopfunc": true, // allow functions winthin loops
+	"newcap": false, // deprecated
+	"sub": true, // allow headers['DNT'] instead of headers.DNT
+	"undef": true, // warn about not-defined variables
 	"validthis": true,
+	"varstmt": true, // enforce 'let' or 'const' instead of 'var'
 
-	"esnext": true,
-	"strict": true,
+	"esversion": 6,
+	"strict": true, // 'use strict' is neither implicit nor allowed for functions with non-simple parameter lists, must be in outer function
 	"globalstrict": true,
 	"latedef": "nofunc",
-	// "novar": true, // may be coming @see #1549
+
+	"browser": true,
+	"devel": true, // console, alert, ...
 
 	"globals": {
-		"document": true,
-		"self": true,
-		"window": false,
-		"require": false,
-		"console": false,
-		"exports": false
+		"define": false,
+		"require": false
 	}
 }
