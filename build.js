@@ -12,6 +12,7 @@ const files = {
 		'icon.png',
 		'LICENSE',
 		'package.json',
+		'README.md',
 	],
 	node_modules: {
 		jszip: [
@@ -96,12 +97,6 @@ const manifestJson = {
 	incognito: 'spanning', // firefox doesn't support anything else
 };
 
-// files from '/' to be included in '/'
-const sdkRootFiles = [
-	'LICENSE',
-	'README.md',
-];
-
 const {
 	concurrent: { async, spawn, promisify, },
 	functional,
@@ -148,8 +143,8 @@ const build = module.exports = async(function*(options) {
 	const trueisch = value => value === undefined || value;
 
 	(yield Promise.all([
-		trueisch(options.update)  &&  buildUpdate(options.update  || { }),
-		(!options.outDir || options.clearOutDir) && (yield remove(outDir)),
+		trueisch(options.update) && buildUpdate(options.update  || { }),
+		(!options.outDir || options.clearOutDir) && (yield remove(outDir).catch(() => log('Could not clear output dir'))),
 	]));
 
 	(yield Promise.all([
@@ -158,13 +153,14 @@ const build = module.exports = async(function*(options) {
 	]));
 
 	const jpm = 'node "'+ resolve(__dirname, 'node_modules/web-ext/bin/web-ext') +'"';
-	const run = command => execute(command, { cwd: outDir, });
+	const run = command => execute(log('running:', command), { cwd: outDir, });
 
-	if (options.xpi || (options.xpi !== false && !options.run && !options.post && !options.zip)) {
-		log((yield run(jpm +' build --artifacts-dir .')).replace(packageJson.name, outputName));
-	}
-	if (options.run) {
-		log((yield run(jpm +' run'+ (options.run.bin ? ' -b "'+ options.run.bin  +'"' : ''))));
+	if (options.zip || (options.zip == null && !options.run && !options.post)) {
+		(yield promisify(require('zip-dir'))(outDir, {
+			filter: path => !(/\.(?:zip|xpi)$/).test(path),
+			saveTo: join(outDir, outputName +'.zip'),
+		}));
+		log('wrote WebExtension zip to', join(outDir, outputName +'.zip'));
 	}
 	if (options.post) {
 		const url = options.post.url
@@ -172,12 +168,8 @@ const build = module.exports = async(function*(options) {
 		: 'http://localhost:8888/';
 		log((yield run(jpm +' post --post-url "'+ url +'"')));
 	}
-	if (options.zip) {
-		(yield promisify(require('zip-dir'))('./build/webextension', {
-			filter: path => !(/\.(?:zip|xpi)$/).test(path),
-			saveTo: join(outDir, outputName +'.zip'),
-		}));
-		log('wrote WebExtension zip to', join(outDir, outputName +'.zip'));
+	if (options.run) {
+		log((yield run(jpm +' run'+ (options.run.bin ? ' --firefox-binary "'+ options.run.bin  +'"' : ''))));
 	}
 
 	return outputName;
