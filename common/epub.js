@@ -1,10 +1,10 @@
-(function(global) { 'use strict'; define(function({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+(function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 	'node_modules/es6lib/network': { HttpRequest, mimeTypes, arrayBufferToString, },
 	'node_modules/es6lib/object': { cloneOnto, },
 	'node_modules/es6lib/string': { Guid, },
 	'node_modules/jszip/dist/jszip.min': JsZip,
 	Templates,
-}) {
+}) => {
 
 const mimeType = mimeTypes.epub;
 
@@ -40,7 +40,7 @@ class EPub {
 		this.language = this.language || 'en';
 		this.guid = this.guid || Guid();
 		this.creators = [].concat(this.creators, this.creator, this.author, this.authors).filter(x => x);
-		!this.creators.find(it => it.role === 'author') && this.creators.push({ name: '<unknown>', role: 'author'});
+		!this.creators.find(it => it.role === 'author') && this.creators.push({ name: '<unknown>', role: 'author', });
 
 		this.chapters.forEach(chapter =>
 			chapter.mimeType === 'text/html-body'
@@ -178,4 +178,4 @@ class EPub {
 
 return (EPub.EPub = EPub);
 
-}); })((function() { /* jshint strict: false */ return this; })());
+}); })(this);

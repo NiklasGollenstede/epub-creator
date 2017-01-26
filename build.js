@@ -1,8 +1,8 @@
-'use strict'; /* globals __dirname, __filename, module, process */ // license: MPL-2.0
+/*eslint strict: ["error", "global"], no-implicit-globals: "off"*/ 'use strict'; /* globals __dirname, module, process */ // license: MPL-2.0
 
 const packageJson = require('./package.json');
 
-// files from '/' to be included in /webextension/
+// files from '/' to be included
 const files = {
 	'.': [
 		'background/',
@@ -11,6 +11,7 @@ const files = {
 		'ui/',
 		'icon.png',
 		'LICENSE',
+		'manifest.json',
 		'package.json',
 		'README.md',
 	],
@@ -58,22 +59,23 @@ const manifestJson = {
 	license: packageJson.license,
 	description: packageJson.description,
 	repository: packageJson.repository,
+	contributions: packageJson.contributions,
 
 	icons: { 64: 'icon.png', },
 
-	minimum_chrome_version: '50.0.0',
+	minimum_chrome_version: '55.0.0',
 	applications: {
 		gecko: {
 			id: '@'+ packageJson.name,
-			strict_min_version: '50.0',
-		}
+			strict_min_version: '52.0',
+		},
 	},
 
 	permissions: [
 		'notifications',
 		'storage',
 		'tabs',
-		'*://*/*'
+		'*://*/*',
 	],
 	optional_permissions: [ ],
 
@@ -91,19 +93,19 @@ const manifestJson = {
 	web_accessible_resources: [ ], // must be empty
 
 	run_update: { // options for the es6lib/update module
-		'base_path': '/update/'
+		'base_path': '/update/',
 	},
 
 	incognito: 'spanning', // firefox doesn't support anything else
 };
 
 const {
-	concurrent: { async, spawn, promisify, },
+	concurrent: { promisify, },
 	functional,
 	fs: { FS, },
 	process: { execute, },
 } = require('es6lib');
-const { join, relative, resolve, dirname, basename, } = require('path');
+const { join, resolve, basename, } = require('path');
 
 const fsExtra = require('fs-extra');
 const copy = promisify(fsExtra.copy);
@@ -112,51 +114,51 @@ const writeFile = promisify(fsExtra.outputFile);
 
 let log = function() { return arguments[arguments.length - 1]; };
 
-const buildUpdate = async(function*(options) {
+async function buildUpdate(_) {
 	const outputJson = promisify(require('fs-extra').outputJson);
-	for (let component of (yield FS.readdir(resolve(__dirname, `update`)).catch(() => [ ]))) {
-		const names = (yield FS.readdir(resolve(__dirname, `update/${ component }`)))
+	for (const component of (await FS.readdir(resolve(__dirname, `update`)).catch(() => [ ]))) {
+		const names = (await FS.readdir(resolve(__dirname, `update/${ component }`)))
 		.filter(_=>_ !== 'versions.json')
 		.map(path => basename(path).slice(0, -3));
-		(yield outputJson(resolve(__dirname, `update/${ component }/versions.json`), names));
+		(await outputJson(resolve(__dirname, `update/${ component }/versions.json`), names));
 	}
 	log('wrote version info');
-});
+}
 
-const copyFiles = async(function*(files, from, to) {
+async function copyFiles(files, from, to) {
 	const paths = [ ];
 	(function addPaths(prefix, module) {
-		if (Array.isArray(module)) { return paths.push(...module.map(file => join(prefix, file))); }
+		if (Array.isArray(module)) { return void paths.push(...module.map(file => join(prefix, file))); }
 		Object.keys(module).forEach(key => addPaths(join(prefix, key), module[key]));
 	})('.', files);
 
-	(yield Promise.all(paths.map(path =>
+	(await Promise.all(paths.map(path =>
 		copy(join(from, path), join(to, path))
 		.catch(error => console.warn('Skipping missing file/folder "'+ path +'"', error))
 	)));
-});
+}
 
-const build = module.exports = async(function*(options) {
+async function build(options) {
 	const outputName = packageJson.title.toLowerCase().replace(/[^a-z0-9\.-]+/g, '_') +'-'+ packageJson.version;
 	const outDir = options.outDir || resolve(__dirname, './build');
 
 	const trueisch = value => value === undefined || value;
 
-	(yield Promise.all([
+	(await Promise.all([
 		trueisch(options.update) && buildUpdate(options.update  || { }),
-		(!options.outDir || options.clearOutDir) && (yield remove(outDir).catch(() => log('Could not clear output dir'))),
+		writeFile(join('.', 'manifest.json'), JSON.stringify(manifestJson), 'utf8'),
+		(!options.outDir || options.clearOutDir) && (await remove(outDir).catch(() => log('Could not clear output dir'))),
 	]));
 
-	(yield Promise.all([
+	(await Promise.all([
 		copyFiles(files, '.', join(outDir, '.')),
-		writeFile(join(outDir, 'manifest.json'), JSON.stringify(manifestJson, null, '\t', 'utf8')),
 	]));
 
-	const jpm = 'node "'+ resolve(__dirname, 'node_modules/web-ext/bin/web-ext') +'"';
+	const bin = 'node "'+ resolve(__dirname, 'node_modules/web-ext/bin/web-ext') +'"';
 	const run = command => execute(log('running:', command), { cwd: outDir, });
 
 	if (options.zip || (options.zip == null && !options.run && !options.post)) {
-		(yield promisify(require('zip-dir'))(outDir, {
+		(await promisify(require('zip-dir'))(outDir, {
 			filter: path => !(/\.(?:zip|xpi)$/).test(path),
 			saveTo: join(outDir, outputName +'.zip'),
 		}));
@@ -166,14 +168,14 @@ const build = module.exports = async(function*(options) {
 		const url = options.post.url
 		? typeof options.post.url === 'number' ? 'http://localhost:'+ options.post.url +'/' : options.post.url
 		: 'http://localhost:8888/';
-		log((yield run(jpm +' post --post-url "'+ url +'"')));
+		log((await run(bin +' post --post-url "'+ url +'"')));
 	}
 	if (options.run) {
-		log((yield run(jpm +' run'+ (options.run.bin ? ' --firefox-binary "'+ options.run.bin  +'"' : ''))));
+		log((await run(bin +' run'+ (options.run.bin ? ' --firefox-binary "'+ options.run.bin  +'"' : ''))));
 	}
 
 	return outputName;
-});
+}
 
 
 if (require.main === module) {
@@ -181,4 +183,6 @@ if (require.main === module) {
 	module.exports = build(require('json5').parse(process.argv[2] || '{ }'))
 	.then(name => log('Build done:', name))
 	.catch(error => { console.error(error); process.exitCode = 1; throw error; });
+} else {
+	module.exports = build;
 }

@@ -1,8 +1,8 @@
-(function(global) { 'use strict'; define(function({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+(function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 	'node_modules/web-ext-utils/chrome/': { runtime, applications, },
 	'node_modules/web-ext-utils/options/editor': Editor,
 	'common/options': options,
-}) {
+}) => {
 
 window.options = options;
 
@@ -23,6 +23,19 @@ set('repo',       'href',  manifest.repository.url);
 set('appName',             applications.current.replace(/^./, c => c.toUpperCase()));
 set('appVersion',          applications.version);
 
+if (manifest.contributions) {
+	const about = document.querySelector('#about');
+	const h3 = about.appendChild(document.createElement('h3'));
+	h3.textContent = `Contributions`;
+	manifest.contributions.forEach(({ who, what, link, license, }) => {
+		const line = about.appendChild(document.createElement('div'));
+		const _what = line.appendChild(document.createElement(link ? 'a' : 'span'));
+		link && (_what.href = link) && (_what.target = '_blank');
+		_what.textContent = what;
+		line.appendChild(new Text(` by ${ who }${ license ? ' ('+ license +')' : ''}`));
+	});
+}
+
 function set(key, attr, value) {
 	value = arguments[arguments.length - 1];
 	attr = arguments.length > 2 ? attr : 'textContent';
@@ -30,4 +43,4 @@ function set(key, attr, value) {
 	element && (element[attr] = value);
 }
 
-}); })((function() { /* jshint strict: false */ return this; })());
+}); })(this);

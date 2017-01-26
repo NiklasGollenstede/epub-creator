@@ -4,21 +4,40 @@
 	"description": "ePub Creator is a WebExtension that creates ePub e-books from web pages. Currently it only works on 'overdrive.com's online reader.",
 	"author": "Niklas Gollenstede",
 	"license": "MPL 2.0",
-	"version": "0.4.0b1",
+	"version": "0.4.0b2",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/NiklasGollenstede/epub-creator"
 	},
+	"contributions": [
+		{
+			"what": "JSZip",
+			"who": "Stuk",
+			"link": "https://github.com/Stuk/jszip",
+			"license": "MIT"
+		}
+	],
 	"dependencies": {
 		"fs-extra": "0.30.0",
 		"json5": "0.5.0",
 		"temp": "0.8.3",
 		"web-ext": "1.7.0",
 		"zip-dir": "1.0.2",
+		"babel-eslint": "7.1.1",
+		"eslint": "3.14.1",
 
 		"jszip": "3.1.3",
 
-		"es6lib": "NiklasGollenstede/es6lib#aba6abf",
-		"web-ext-utils": "NiklasGollenstede/web-ext-utils#f25e7a5"
+		"es6lib": "NiklasGollenstede/es6lib#1cddd0a",
+		"web-ext-utils": "NiklasGollenstede/web-ext-utils#f25e7a5",
+
+		"eslintrc": "NiklasGollenstede/eslintrc"
+	},
+	"scripts": {
+		"start": "node --harmony-async-await build.js",
+		"lint": "eslint --ignore-path .gitignore ."
+	},
+	"eslintConfig": {
+		"extends": "./node_modules/eslintrc/web-ext.js"
 	}
 }

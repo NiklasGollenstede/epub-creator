@@ -1,11 +1,10 @@
-(function() { 'use strict'; define(function({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+(function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 	'node_modules/web-ext-utils/inject': { inject, },
 	module,
-}) {
+}) => {
 
 const { call, } = (_=>_); // i.e. Function.prototype
 const forEach = call.bind(Array.prototype.forEach);
-const filter  = call.bind(Array.prototype.filter);
 const map  = call.bind(Array.prototype.map);
 
 /**
@@ -15,7 +14,7 @@ const map  = call.bind(Array.prototype.map);
 module.exports = function collect(options = { }) {
 
 	// get a JSON clone of  window.wrappedJSObject.bData
-	const bData = inject(function() { return this.bData; });
+	const bData = inject(() => window.bData);
 
 	const resources = [ ];
 	let nav = false;
@@ -34,7 +33,7 @@ module.exports = function collect(options = { }) {
 			forEach(doc.querySelectorAll('style, link, menu'), element => element.remove());
 			forEach(doc.querySelectorAll('img'), img => !img.alt && (img.alt = 'IMAGE'));
 
-			const styles = new Map([[ '', 0, ]]);
+			const styles = new Map([ [ '', 0, ], ]);
 
 			forEach(doc.querySelectorAll('*'), element => {
 				const style = element.getAttribute('style');
@@ -52,7 +51,7 @@ module.exports = function collect(options = { }) {
 			});
 
 			let css = '';
-			styles.forEach((index, style) => css += style && ('.inline'+ index +' { '+ style +' }\n\t\t\t') || '');
+			styles.forEach((index, style) => (css += style && ('.inline'+ index +' { '+ style +' }\n\t\t\t') || ''));
 
 			// find meta data
 			const name = (doc.querySelector('base') && doc.querySelector('base').href.match(/^.*?:\/\/.*?\/(.*?)$/) || [])[1];
@@ -73,13 +72,13 @@ module.exports = function collect(options = { }) {
 
 			// check if this document represents the (first) cover or ToC
 			if (!nav && (
-				name && (/^(content|contents|nav|navigation|inhalt)$/i).test((name.match(/\/(.*?)\.\w{1,10}$/) || [ '', '' ])[1])
+				name && (/^(content|contents|nav|navigation|inhalt)$/i).test((name.match(/\/(.*?)\.\w{1,10}$/) || [ '', '', ])[1])
 				|| title && (/^(content|contents|nav|navigation|inhalt)$/i).test(title)
 			)) {
 				nav = decodeURI(name);
 			}
 			if (!cover && (
-				name && (/^(cover|title|titel)$/i).test((name.match(/\/(.*?)\.\w{1,10}$/) || [ '', '' ])[1])
+				name && (/^(cover|title|titel)$/i).test((name.match(/\/(.*?)\.\w{1,10}$/) || [ '', '', ])[1])
 				|| title && (/^(cover|title|titel)$/i).test(title)
 			)) {
 				cover = decodeURI(name);
@@ -117,6 +116,7 @@ function findRecursive(array, test, key) {
 		if (Array.isArray(item[key])) {
 			return item[key].some(find);
 		}
+		return false;
 	}
 	array.some(find);
 	return result;
@@ -127,4 +127,4 @@ function toXML(element) {
 	return serializer.serializeToString(element);
 }
 
-}); })();
+}); })(this);

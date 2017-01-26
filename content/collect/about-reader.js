@@ -1,10 +1,12 @@
-(function() { 'use strict';
+(function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	module,
+}) => {
 
 /**
  * Collects the contents of an about:reader view.
  * @return {object} Options that can be passed as argument to the EPub constructor.
  */
-window.collect = function collect() {
+module.exports = function collect() {
 
 	const doc = document.querySelector('#container').cloneNode(true);
 
@@ -26,7 +28,7 @@ window.collect = function collect() {
 	});
 	Array.forEach(doc.querySelectorAll('style, link, menu'), element => element.remove());
 	Array.forEach(doc.querySelectorAll('*'), element => {
-		for (var i = element.attributes.length; i-- > 0;) {
+		for (let i = element.attributes.length; i-- > 0;) {
 			const attr = element.attributes[i];
 			if ([ 'class', 'src', 'href', 'title', 'alt', ].includes(attr.name)) { continue; }
 			element.removeAttributeNode(attr);
@@ -58,4 +60,4 @@ function toXML(element) {
 	return serializer.serializeToString(element);
 }
 
-})();
+}); })(this);

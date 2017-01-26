@@ -1,7 +1,7 @@
-(function() { 'use strict'; define(function*({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+(function(global) { 'use strict'; define(async ({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 	'node_modules/web-ext-utils/options/': Options,
 	'node_modules/web-ext-utils/chrome/': { Storage, },
-}) {
+}) => {
 
 const model = {
 	setNavProperty: {
@@ -15,12 +15,12 @@ const model = {
 		description: `If enabled, some style information are extracted. Some readers won't be able to change the font size when styles are set.`,
 		type: 'bool',
 		default: false,
-	}
+	},
 };
 
 const listerners = new WeakMap;
 
-const options = (yield new Options({
+const options = (await new Options({
 	model,
 	prefix: 'options',
 	storage: Storage.sync,
@@ -40,4 +40,4 @@ options.model = Object.freeze(model);
 
 return options;
 
-}); })();
+}); })(this);

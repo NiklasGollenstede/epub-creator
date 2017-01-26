@@ -4,6 +4,6 @@
 
   - `git clone https://github.com/NiklasGollenstede/epub-creator && cd epub-creator`
   - `npm install`
-  - `node build.js`<br>
+  - `npm start`<br>
     and temporary load from the `./build/` directory, use the `.zip` file therein<br>
-    or `node build.js {run:1}` to debug in a new Firefox instance.
+    or `npm start -- {run:1}` to debug in a new Firefox instance.
