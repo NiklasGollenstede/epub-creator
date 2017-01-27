@@ -1,5 +1,5 @@
 (function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	'node_modules/es6lib/network': { HttpRequest, mimeTypes, arrayBufferToString, },
+	'node_modules/es6lib/network': { HttpRequest, mimeTypes, },
 	'node_modules/es6lib/object': { cloneOnto, },
 	'node_modules/es6lib/string': { Guid, },
 	'node_modules/jszip/dist/jszip.min': JsZip,
@@ -108,26 +108,25 @@ class EPub {
 	 * @async
 	 * @return {Promise}  Promise that resolves to this.
 	 */
-	loadResources() {
-		if (!this.resources) { return Promise.resolve(this); }
-		this.resources = this.resources.filter((r1, i, a) => i === a.findIndex(r2 => (r1.name || r1.src) === (r2.name || r2.src)));
-		return Promise.all(this.resources.filter(
-			resource => (resource.src || resource.url) && !resource.content
-		).map(
-			resource => HttpRequest((resource.src || resource.url), Object.assign({
+	async loadResources() {
+		if (!this.resources) { return this; }
+		const resources = Array.from(new Map(
+			this.resources.filter(({ src, content, }) => src && !content) // only unloaded
+			.map(it => [ it.src, it, ]) // unique .src
+		).values());
+
+		(await Promise.all(resources.map(async resource => {
+			const request = (await HttpRequest(resource.src, Object.assign({
 				responseType: 'arraybuffer',
-			}, resource.options))
-			.then(request => {
-				resource.content = arrayBufferToString(request.response);
-				resource.mimeType = request.getResponseHeader('content-type') || resource.mimeType;
-				resource.options = Object.assign({ binary: true, }, resource.options);
-				resource.name = resource.name || resource.src.match(/\/\/.*?\/(.*)$/)[1]; //.replace(/^oebps[\/\\]/i, '');
-			})
-		))
-		.then(() => {
-			typeof this.opf === 'object' && (this.opf.content = Templates.contentOpf(this));
-			return this;
-		});
+			}, resource.options)));
+			resource.content = request.response;
+			resource.mimeType = request.getResponseHeader('content-type') || resource.mimeType;
+			resource.name = resource.name || resource.src.match(/\/\/.*?\/(.*)$/)[1]; //.replace(/^oebps[\/\\]/i, '');
+		})));
+
+		typeof this.opf === 'object' && (this.opf.content = Templates.contentOpf(this));
+
+		return this;
 	}
 
 	/**

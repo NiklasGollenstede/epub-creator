@@ -33,8 +33,7 @@ const files = {
 			'string.js',
 		],
 		'web-ext-utils': {
-			'.': [ 'utils.js', 'inject.js', ],
-			chrome: [
+			browser: [
 				'index.js',
 			],
 			options: [
@@ -45,6 +44,10 @@ const files = {
 			],
 			update: [
 				'index.js',
+			],
+			utils: [
+				'inject.js',
+				'run-in-tab.js',
 			],
 		},
 	},
@@ -139,7 +142,8 @@ async function copyFiles(files, from, to) {
 }
 
 async function build(options) {
-	const outputName = packageJson.title.toLowerCase().replace(/[^a-z0-9\.-]+/g, '_') +'-'+ packageJson.version;
+	options.beta && (manifestJson.version += 'b'+ options.beta);
+	const outputName = manifestJson.name.toLowerCase().replace(/[^a-z0-9\.-]+/g, '_') +'-'+ manifestJson.version;
 	const outDir = options.outDir || resolve(__dirname, './build');
 
 	const trueisch = value => value === undefined || value;

@@ -1,4 +1,4 @@
-(function(golbal) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+(function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 	'node_modules/es6lib/template': { TemplateEngine, ForEach, ForOf, While, If, Value, Index, Key, Call, Predicate, End, NoMap, },
 	'node_modules/es6lib/string': { escapeHtml, removeTags, },
 	exports,
@@ -131,7 +131,7 @@ const contentNcx = exports.contentNcx = ({ guid, language, title, description, c
 	</docAuthor>
 	<navMap>
 		${ ForEach(chapters) }
-		<navPoint playOrder="${ Call([Index], i => i+1) }" id="chapter${ Call([Index], i => i+1) }">
+		<navPoint playOrder="${ Call([Index,], i => i+1) }" id="chapter${ Call([Index,], i => i+1) }">
 			<navLabel>
 				<text>${ Call(v => v.title) }</text>
 			</navLabel>

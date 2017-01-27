@@ -1,5 +1,5 @@
 (function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	'node_modules/web-ext-utils/inject': { inject, },
+	'node_modules/web-ext-utils/utils/inject': { inject, },
 	module,
 }) => {
 
@@ -35,6 +35,8 @@ module.exports = function collect(options = { }) {
 
 			const styles = new Map([ [ '', 0, ], ]);
 
+			forEach(doc.querySelectorAll('img'), e => e.previousSibling && e.previousSibling.src === e.src && e.remove());
+
 			forEach(doc.querySelectorAll('*'), element => {
 				const style = element.getAttribute('style');
 				if (style && !styles.has(style)) {
@@ -51,7 +53,7 @@ module.exports = function collect(options = { }) {
 			});
 
 			let css = '';
-			styles.forEach((index, style) => (css += style && ('.inline'+ index +' { '+ style +' }\n\t\t\t') || ''));
+			styles.forEach((index, style) => (css += style && ('\t\t\t.inline'+ index +' { '+ style +' }\n') || ''));
 
 			// find meta data
 			const name = (doc.querySelector('base') && doc.querySelector('base').href.match(/^.*?:\/\/.*?\/(.*?)$/) || [])[1];
@@ -66,7 +68,7 @@ module.exports = function collect(options = { }) {
 			${ (doc.querySelector('title') && doc.querySelector('title').innerHTML || '').trim() }
 		</title>`) + (options.styles && css && `
 		<style id="inlinetyles" type="text/css">
-			${ css.trim() }
+			${ css }
 		</style>
 ` || '');
 

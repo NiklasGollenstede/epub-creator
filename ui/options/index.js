@@ -1,5 +1,5 @@
 (function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	'node_modules/web-ext-utils/chrome/': { runtime, applications, },
+	'node_modules/web-ext-utils/browser/version':  { current: currentBrowser, version: browserVersion, },
 	'node_modules/web-ext-utils/options/editor': Editor,
 	'common/options': options,
 }) => {
@@ -11,7 +11,7 @@ new Editor({
 	host: document.querySelector('#options'),
 });
 
-const manifest = runtime.getManifest();
+const manifest = (global.browser || global.chrome).runtime.getManifest();
 
 global.document.title = 'Options - '+ manifest.name;
 
@@ -20,8 +20,8 @@ set('version',             manifest.version);
 set('license',             manifest.license);
 set('author',              manifest.author);
 set('repo',       'href',  manifest.repository.url);
-set('appName',             applications.current.replace(/^./, c => c.toUpperCase()));
-set('appVersion',          applications.version);
+set('appName',             currentBrowser.replace(/^./, c => c.toUpperCase()));
+set('appVersion',          browserVersion);
 
 if (manifest.contributions) {
 	const about = document.querySelector('#about');
