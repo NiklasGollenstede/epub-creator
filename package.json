@@ -11,12 +11,16 @@
 	},
 	"contributions": [
 		{
-			"what": "JSZip",
-			"who": "Stuk",
-			"link": "https://github.com/Stuk/jszip",
-			"license": "MIT"
+			"what": { "text": "JSZip", "link": "https://github.com/Stuk/jszip" },
+			"who": "Stuart Knightley, David Duponchel, Franz Buchinger, António Afonso",
+			"license": { "text": "MIT", "link": "/node_modules/jszip/LICENSE.markdown" }
+		}, {
+			"what": { "text": "Book Icon", "link": "http://fontawesome.io/icon/book/" },
+			"who": { "text": "Dave Gandy", "link": "https://twitter.com/davegandy" },
+			"license": { "text": "OFL-1.1", "link": "http://scripts.sil.org/OFL" }
 		}
 	],
+
 	"dependencies": {
 		"fs-extra": "0.30.0",
 		"json5": "0.5.0",
@@ -28,12 +32,13 @@
 
 		"jszip": "3.1.3",
 
-		"es6lib": "NiklasGollenstede/es6lib#1cddd0a",
-		"web-ext-utils": "NiklasGollenstede/web-ext-utils#f25e7a5",
+		"es6lib": "NiklasGollenstede/es6lib#605c74b",
+		"web-ext-utils": "NiklasGollenstede/web-ext-utils#3d03eb2",
 
 		"eslintrc": "NiklasGollenstede/eslintrc"
 	},
 	"scripts": {
+		"postinstall": "npm start",
 		"start": "node --harmony-async-await build.js",
 		"lint": "eslint --ignore-path .gitignore ."
 	},

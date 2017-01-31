@@ -27,13 +27,27 @@ if (manifest.contributions) {
 	const about = document.querySelector('#about');
 	const h3 = about.appendChild(document.createElement('h3'));
 	h3.textContent = `Contributions`;
-	manifest.contributions.forEach(({ who, what, link, license, }) => {
+	manifest.contributions.forEach(({ what, who, license, }) => {
+		if (!what) { return; }
 		const line = about.appendChild(document.createElement('div'));
-		const _what = line.appendChild(document.createElement(link ? 'a' : 'span'));
-		link && (_what.href = link) && (_what.target = '_blank');
-		_what.textContent = what;
-		line.appendChild(new Text(` by ${ who }${ license ? ' ('+ license +')' : ''}`));
+		line.style.margin = '3px 0';
+		addLink(line, what);
+		if (!who) { return; }
+		line.appendChild(new Text(` by `));
+		addLink(line, who);
+		if (!license) { return; }
+		line.appendChild(new Text(` (`));
+		addLink(line, license);
+		line.appendChild(new Text(`)`));
 	});
+}
+
+function addLink(to, link) {
+	const text = link.text || link; link = typeof link === 'object' && link.link || null;
+	const _link = to.appendChild(document.createElement(link ? 'a' : 'span'));
+	link && (_link.href = link) && (_link.target = '_blank');
+	_link.textContent = text;
+	return link;
 }
 
 function set(key, attr, value) {
