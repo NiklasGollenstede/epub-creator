@@ -55,12 +55,18 @@ async function build(options) {
 					'index.js',
 					'version.js',
 				],
-				options: [
-					'index.js',
-					'editor.js',
-					'editor-inline.css',
-					'editor-layout.css',
-				],
+				options: {
+					'.': [ 'index.js', ],
+					editor: [
+						'about.js',
+						'about.css',
+						'index.js',
+						'index.css',
+						'inline.css',
+						'inline.html',
+						'inline.js',
+					],
+				},
 				update: [
 					'index.js',
 				],
@@ -109,7 +115,7 @@ async function build(options) {
 			default_icon: options.chrome ? { 64: 'icon.png', } : { 512: 'icon.svg', },
 		},
 		options_ui: {
-			page: 'ui/options/index.html',
+			page: 'node_modules/web-ext-utils/options/editor/inline.html',
 			open_in_tab: false,
 		},
 		web_accessible_resources: [ ], // must be empty

@@ -11,13 +11,13 @@
 	},
 	"contributions": [
 		{
-			"what": { "text": "JSZip", "link": "https://github.com/Stuk/jszip" },
-			"who": "Stuart Knightley, David Duponchel, Franz Buchinger, António Afonso",
-			"license": { "text": "MIT", "link": "/node_modules/jszip/LICENSE.markdown" }
+			"what": { "name": "JSZip", "url": "https://github.com/Stuk/jszip" },
+			"who": [ "Stuart Knightley", "David Duponchel", "Franz Buchinger", "António Afonso" ],
+			"license": { "name": "MIT", "url": "/node_modules/jszip/LICENSE.markdown" }
 		}, {
-			"what": { "text": "Book Icon", "link": "http://fontawesome.io/icon/book/" },
-			"who": { "text": "Dave Gandy", "link": "https://twitter.com/davegandy" },
-			"license": { "text": "OFL-1.1", "link": "http://scripts.sil.org/OFL" }
+			"what": { "name": "Book Icon", "url": "http://fontawesome.io/icon/book/" },
+			"who": { "name": "Dave Gandy", "url": "https://twitter.com/davegandy" },
+			"license": { "name": "OFL-1.1", "url": "http://scripts.sil.org/OFL" }
 		}
 	],
 
@@ -32,8 +32,8 @@
 
 		"jszip": "3.1.3",
 
-		"es6lib": "NiklasGollenstede/es6lib#605c74b",
-		"web-ext-utils": "NiklasGollenstede/web-ext-utils#3d03eb2",
+		"es6lib": "NiklasGollenstede/es6lib#2210c8c",
+		"web-ext-utils": "NiklasGollenstede/web-ext-utils#2066105",
 
 		"eslintrc": "NiklasGollenstede/eslintrc"
 	},
