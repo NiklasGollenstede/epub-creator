@@ -20,7 +20,7 @@ module.exports = function collect() {
 			|| doc.querySelector('#reader-credits') || { textContent: '<unknown>', }
 		).textContent
 	);
-	if (author === null) { throw new Error('__MSG__Operation_canceled'); }
+	if (author === null) { return null; }
 
 	Array.forEach(doc.querySelectorAll('img'), img => {
 		!img.alt && (img.alt = 'IMAGE');

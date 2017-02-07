@@ -3,16 +3,15 @@
 	'common/epub': EPub,
 	'common/options': options,
 	require,
-}) => async collector => { try {
+}) => async collector => {
 
 	const collect = (await require.async('content/collect/'+ collector));
 	const contents = collect({ styles: options.children.collectStyles.value, });
+	if (!contents) { return null; }
+
 	const book = new EPub(Object.assign(contents, { markNav: options.children.setNavProperty.value, }));
 	(await book.loadResources());
 	saveAs((await book.toBlob()), book.name);
 
-} finally {
-	options.destroy();
-	delete global.define;
-	delete global.require;
-} }); })(this);
+	return book.name;
+}); })(this);

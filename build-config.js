@@ -4,7 +4,16 @@ module.exports = function({ /*options, packageJson,*/ manifestJson, files, }) {
 	manifestJson.permissions.push(
 		'notifications',
 		'tabs',
-		'*://*/*'
+		'<all_urls>'
+	);
+
+	manifestJson.browser_action = {
+		default_icon: manifestJson.icons,
+		default_title: 'Download as eBook',
+	};
+
+	files['.'].push(
+		'error.svg'
 	);
 
 	files.node_modules = {
@@ -26,9 +35,9 @@ module.exports = function({ /*options, packageJson,*/ manifestJson, files, }) {
 			'string.js',
 		],
 		'web-ext-utils': {
-			browser: [
-				'index.js',
-				'version.js',
+			'.': [
+				'browser/',
+				'loader/',
 			],
 			options: {
 				'.': [ 'index.js', ],
@@ -49,7 +58,6 @@ module.exports = function({ /*options, packageJson,*/ manifestJson, files, }) {
 				'files.js',
 				//	'index.js',
 				'inject.js',
-				'run-in-tab.js',
 				'semver.js',
 			],
 		},
