@@ -4,14 +4,13 @@
 	'node_modules/web-ext-utils/browser/version': { gecko, },
 	'node_modules/web-ext-utils/loader/': { runInTab, },
 	'node_modules/web-ext-utils/update/': updated,
-	'node_modules/web-ext-utils/utils/files': { exsists, },
+	'node_modules/web-ext-utils/utils/': { reportError, },
 }) => {
 
 updated.extension.to.channel !== '' && console.info('Ran updates', updated);
 
-browserAction && browserAction.onClicked.addListener(makeBook);
-
-async function makeBook() { try {
+browserAction && browserAction.onClicked.addListener(onClick);
+async function onClick() { try {
 	const tab = (await Tabs.query({ currentWindow: true, active: true, }))[0];
 	let collector;
 	if (/^about\:reader\?url\=/.test(tab.url)) {
@@ -24,24 +23,12 @@ async function makeBook() { try {
 
 	const name = (await runInTab(tab.id, collector => require.async('content/collect/').then(_=>_(collector)), collector));
 	console.info(`Saved book "${ name }"`);
-} catch (error) { reportError(error); } }
+} catch (error) { currentTab = null; reportError(error); throw error; } }
 
-let currentTab = null; const notificationId = 'main', clearNotificationSoon = debounce(() => Notifications.clear(notificationId), 5000);
-
-function reportError(error) {
-	currentTab = null;
-	Notifications.create(notificationId, {
-		type: 'basic', iconUrl: require.toUrl(exsists('error.svg') ? 'error.svg' : 'icon.svg'),
-		title: `That didn't work ...`,
-		message: error && (error.message || error.name) || error || 'at all',
-	});
-	clearNotificationSoon();
-	throw error;
-}
-
+let currentTab = null;
 function offerReader(tab) {
 	currentTab = tab;
-	Notifications.create(notificationId, {
+	Notifications.create('main', {
 		type: 'basic', iconUrl: require.toUrl('icon.svg'),
 		title: !gecko ? `Not supported` : `Open reader mode?`,
 		message: `ePub creator doesn't support this site.`
@@ -50,9 +37,10 @@ function offerReader(tab) {
 	clearNotificationSoon();
 }
 
+const clearNotificationSoon = debounce(() => Notifications.clear('main'), 5000);
 Notifications.onClicked.addListener(async id => {
-	if (id !== notificationId) { return; }
-	Notifications.clear(notificationId);
+	if (id !== 'main') { return; }
+	Notifications.clear('main');
 	if (!currentTab) { return; }
 	const tab = currentTab; currentTab = null;
 	try {
@@ -60,6 +48,6 @@ Notifications.onClicked.addListener(async id => {
 	} catch (error) { reportError({ message: `It seems firefox doesn't support this yet`, }); }
 });
 
-Object.assign(global, { makeBook, reportError, offerReader, }); // for debugging
+Object.assign(global, { onClick, reportError, offerReader, }); // for debugging
 
 }); })(this);
