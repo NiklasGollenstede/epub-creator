@@ -6,10 +6,10 @@
 }) => async collector => {
 
 	const collect = (await require.async('content/collect/'+ collector));
-	const contents = collect({ styles: options.children.collectStyles.value, });
+	const contents = collect({ styles: options.collectStyles.value, });
 	if (!contents) { return null; }
 
-	const book = new EPub(Object.assign(contents, { markNav: options.children.setNavProperty.value, }));
+	const book = new EPub(Object.assign(contents, { markNav: options.setNavProperty.value, }));
 	(await book.loadResources());
 	saveAs((await book.toBlob()), book.name);
 

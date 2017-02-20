@@ -2,7 +2,7 @@
 	'node_modules/web-ext-utils/options/': Options,
 }) => {
 
-return new Options({ model: {
+const model = {
 	setNavProperty: {
 		title: `Set 'nav' property`,
 		description: `Standard compliant when set, but disables the navigation in Sumatra PDF`,
@@ -15,6 +15,13 @@ return new Options({ model: {
 		default: false,
 		input: { type: 'bool', },
 	},
-}, });
+};
+
+const options = (await new Options({ model, }));
+try {
+	require('node_modules/web-ext-utils/loader/content')
+	.onUnload.addListener(() => options.destroy());
+} catch (_) { /* not in content */ }
+return options.children;
 
 }); })(this);

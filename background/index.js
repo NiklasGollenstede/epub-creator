@@ -1,10 +1,9 @@
 (function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	'node_modules/es6lib/functional': { debounce, },
 	'node_modules/web-ext-utils/browser/': { Tabs, browserAction, Notifications, },
 	'node_modules/web-ext-utils/browser/version': { gecko, },
 	'node_modules/web-ext-utils/loader/': { runInTab, },
 	'node_modules/web-ext-utils/update/': updated,
-	'node_modules/web-ext-utils/utils/': { reportError, },
+	'node_modules/web-ext-utils/utils/': { reportError, reportSuccess, },
 }) => {
 
 updated.extension.to.channel !== '' && console.info('Ran updates', updated);
@@ -27,20 +26,17 @@ async function onClick() { try {
 
 let currentTab = null;
 function offerReader(tab) {
-	currentTab = tab;
-	Notifications.create('main', {
-		type: 'basic', iconUrl: require.toUrl('icon.svg'),
-		title: !gecko ? `Not supported` : `Open reader mode?`,
-		message: `ePub creator doesn't support this site.`
-		+ (!gecko ? '' : `Click here if you want to open it in the reader mode and try again.`),
-	});
-	clearNotificationSoon();
+	if (gecko) {
+		currentTab = tab;
+		reportSuccess(`Open reader mode?`, `Click here if you want to open it in the reader mode and try again.`);
+	} else {
+		reportError(`Not supported`, `ePub creator doesn't support this site.`);
+	}
 }
 
-const clearNotificationSoon = debounce(() => Notifications.clear('main'), 5000);
-Notifications.onClicked.addListener(async id => {
-	if (id !== 'main') { return; }
-	Notifications.clear('main');
+gecko && Notifications.onClicked.addListener(async id => {
+	if (id !== 'web-ext-utils:success') { return; }
+	Notifications.clear('web-ext-utils:success');
 	if (!currentTab) { return; }
 	const tab = currentTab; currentTab = null;
 	try {
@@ -48,6 +44,6 @@ Notifications.onClicked.addListener(async id => {
 	} catch (error) { reportError({ message: `It seems firefox doesn't support this yet`, }); }
 });
 
-Object.assign(global, { onClick, reportError, offerReader, }); // for debugging
+Object.assign(global, { onClick, offerReader, reportError, reportSuccess, }); // for debugging
 
 }); })(this);

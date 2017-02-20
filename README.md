@@ -18,3 +18,7 @@ To create beta builds for AMO, add the `{beta:<number>}` option, where `<number>
 To test the extension in a fresh Firefox profile, use the `{run:1}` or `{run:{bin:'path/to firefox/binary'}}` option.
 
 To build for chrome (which doesn't support `.svg` icons), add the `{chrome:1}` option.
+
+## AMO review notes
+
+The exact version of the minified JSZip file can be found here: `https://github.com/Stuk/jszip/blob/v3.1.3/dist/jszip.min.js`.
