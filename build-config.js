@@ -3,8 +3,7 @@ module.exports = function({ /*options, packageJson,*/ manifestJson, files, }) {
 
 	manifestJson.permissions.push(
 		'notifications',
-		'tabs',
-		'<all_urls>'
+		'activeTab',
 	);
 
 	manifestJson.browser_action = {
@@ -42,7 +41,6 @@ module.exports = function({ /*options, packageJson,*/ manifestJson, files, }) {
 					'index.js',
 					'index.css',
 					'inline.css',
-					'inline.html',
 					'inline.js',
 				],
 			},
@@ -50,6 +48,7 @@ module.exports = function({ /*options, packageJson,*/ manifestJson, files, }) {
 				'index.js',
 			],
 			utils: [
+				'event.js',
 				'files.js',
 				'index.js',
 				'inject.js',

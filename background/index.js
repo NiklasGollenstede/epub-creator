@@ -4,12 +4,14 @@
 	'node_modules/web-ext-utils/loader/': { runInTab, },
 	'node_modules/web-ext-utils/update/': updated,
 	'node_modules/web-ext-utils/utils/': { reportError, reportSuccess, },
+	require,
 }) => {
 
 updated.extension.to.channel !== '' && console.info('Ran updates', updated);
 
 browserAction && browserAction.onClicked.addListener(onClick);
 async function onClick() { try {
+	spinner.start();
 	const tab = (await Tabs.query({ currentWindow: true, active: true, }))[0];
 	let collector;
 	if (/^about\:reader\?url\=/.test(tab.url)) {
@@ -22,7 +24,29 @@ async function onClick() { try {
 
 	const name = (await runInTab(tab.id, collector => require.async('content/collect/').then(_=>_(collector)), collector));
 	console.info(`Saved book "${ name }"`);
-} catch (error) { currentTab = null; reportError(error); throw error; } }
+} catch (error) {
+	currentTab = null; reportError(error);
+} finally {
+	spinner.stop();
+} }
+
+const spinner = {
+	strings: [ '\\', '|', '/', '–', ],
+	active: 0,
+	start() {
+		spinner.active++ <= 0 && spinner.spin();
+	},
+	stop() {
+		--spinner.active <= 0 && browserAction.setBadgeText({ text: '', });
+	},
+	spin() {
+		if (spinner.active <= 0) { return; }
+		browserAction.setBadgeText({ text: spinner.strings[0], });
+		spinner.strings.push(spinner.strings.shift());
+		global.setTimeout(spinner.spin, 250);
+	},
+};
+browserAction.setBadgeBackgroundColor({ color: [ 0x00, 0x7f, 0x00, 0x60, ], });
 
 let currentTab = null;
 function offerReader(tab) {
