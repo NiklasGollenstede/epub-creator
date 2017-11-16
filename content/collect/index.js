@@ -6,7 +6,7 @@
 }) => async collector => {
 
 	const collect = (await require.async('content/collect/'+ collector));
-	const contents = collect({ styles: options.collectStyles.value, });
+	const contents = (await collect({ styles: options.collectStyles.value, }));
 	if (!contents) { return null; }
 
 	const book = new EPub(Object.assign(contents, { markNav: options.setNavProperty.value, }));

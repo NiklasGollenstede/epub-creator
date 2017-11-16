@@ -15,46 +15,39 @@ module.exports = function({ /*options, packageJson,*/ manifestJson, files, }) {
 		'error.svg'
 	);
 
-	files.node_modules = {
-		jszip: [
-			'dist/jszip.min.js',
-			'LICENSE.markdown',
-		],
-		es6lib: [
-			'template.js',
-			'dom.js',
-			'network.js',
-			'object.js',
-			'require.js',
-			'string.js',
-		],
-		'web-ext-utils': {
-			'.': [
-				'browser/',
-				'loader/',
-			],
-			options: {
-				'.': [ 'index.js', ],
-				editor: [
-					'about.js',
-					'about.css',
-					'index.js',
-					'index.css',
-					'inline.css',
-					'inline.js',
-				],
-			},
-			update: [
-				'index.js',
-			],
-			utils: [
-				'event.js',
-				'files.js',
-				'index.js',
-				'inject.js',
-				'semver.js',
-			],
-		},
-	};
+	files.node_modules = [
+		'es6lib/template.js',
+		'es6lib/dom.js',
+		'es6lib/network.js',
+		'es6lib/object.js',
+		'es6lib/string.js',
+		'jszip/dist/jszip.min.js',
+		'jszip/LICENSE.markdown',
+		'regexpx/index.js',
+		'web-ext-utils/browser/index.js',
+		'web-ext-utils/browser/version.js',
+		'web-ext-utils/lib/multiport/index.js',
+		'web-ext-utils/lib/pbq/require.js',
+		'web-ext-utils/loader/_background.html',
+		'web-ext-utils/loader/_background.js',
+		'web-ext-utils/loader/_view.html',
+		'web-ext-utils/loader/_view.js',
+		'web-ext-utils/loader/content.js',
+		'web-ext-utils/loader/index.js',
+		'web-ext-utils/loader/views.js',
+		'web-ext-utils/options/editor/about.js',
+		'web-ext-utils/options/editor/about.css',
+		'web-ext-utils/options/editor/index.js',
+		'web-ext-utils/options/editor/index.css',
+		'web-ext-utils/options/editor/inline.css',
+		'web-ext-utils/options/editor/inline.js',
+		'web-ext-utils/options/index.js',
+		'web-ext-utils/update/index.js',
+		'web-ext-utils/utils/event.js',
+		'web-ext-utils/utils/files.js',
+		'web-ext-utils/utils/index.js',
+		'web-ext-utils/utils/inject.js',
+		'web-ext-utils/utils/semver.js',
+	];
 
 };

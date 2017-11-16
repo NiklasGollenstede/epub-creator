@@ -27,9 +27,9 @@
 
 	"dependencies": {
 		"jszip": "Stuk/jszip#v3.1.3",
-		"es6lib": "NiklasGollenstede/es6lib#b0128a6",
-		"web-ext-utils": "NiklasGollenstede/web-ext-utils#22dfa9a",
-		"web-ext-build": "NiklasGollenstede/web-ext-build#dd984aa"
+		"es6lib": "0.0.2",
+		"web-ext-build": "0.0.6",
+		"web-ext-utils": "0.0.15"
 	},
 	"devDependencies": {
 		"babel-eslint": "7.1.1",

@@ -1,17 +1,14 @@
 (function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 	'node_modules/web-ext-utils/utils/inject': { inject, },
 	module,
-}) => {
+}) => { /* global window, */
 
-const { call, } = (_=>_); // i.e. Function.prototype
-const forEach = call.bind(Array.prototype.forEach);
-const map  = call.bind(Array.prototype.map);
 
 /**
  * Collects the book contents from the online reader of overdrive.com.
  * @return {object} Options that can be passed as argument to the EPub constructor.
  */
-module.exports = function collect(options = { }) {
+module.exports = async function collect(options = { }) {
 
 	// get a JSON clone of  window.wrappedJSObject.bData
 	const bData = inject(() => window.bData);
@@ -21,23 +18,32 @@ module.exports = function collect(options = { }) {
 	let cover = false;
 
 	return ({
-		chapters: map(document.querySelectorAll('.bounds>iframe'), (frame, index) => {
-			// clone iframe document and leave the original untouched
-			const doc = frame.contentDocument.documentElement.cloneNode(true);
+		chapters: (await Promise.all(bData.spine.map(async ({ path, }) => {
+			let frame = global.document.querySelector('iframe[src="'+ path +'"]');
+			if (frame) { return frame.contentDocument.documentElement.cloneNode(true); }
+
+			frame = global.document.createElement('iframe'); frame.src = path;
+			const loaded = new Promise((resolve, reject) => { frame.onload = resolve; frame.onerror = reject; });
+			global.document.body.appendChild(frame); (await loaded);
+			const doc = frame.contentDocument.title.trim() === 'Not found - OverDrive Read' ? null : frame.contentDocument.documentElement;
+			if (doc) { doc.remove(); global.document.adoptNode(doc); /* avoid deadO objects in firefox */ }
+			frame.remove(); return doc;
+			// new global.DOMParser().parseFromString((await (await global.fetch(path)).text()), type).documentElement
+		}))).filter(_=>_).map((doc, index) => {
 
 			// find linked images
-			resources.push(...map(doc.querySelectorAll('img'), ({ src, }) => ({ src, name: src.match(/:\/\/.*?\/(.*)$/)[1], })));
+			resources.push(...Array.from(doc.querySelectorAll('img'), ({ src, }) => ({ src, name: src.match(/:\/\/.*?\/(.*)$/)[1], })));
 
 			// html clean-up
 			doc.setAttribute('xmlns', "http://www.w3.org/1999/xhtml");
-			forEach(doc.querySelectorAll('style, link, menu'), element => element.remove());
-			forEach(doc.querySelectorAll('img'), img => !img.alt && (img.alt = 'IMAGE'));
+			doc.querySelectorAll('style, link, menu').forEach(element => element.remove());
+			doc.querySelectorAll('img').forEach(img => !img.alt && (img.alt = 'IMAGE'));
 
 			const styles = new Map([ [ '', 0, ], ]);
 
-			forEach(doc.querySelectorAll('img'), e => e.previousSibling && e.previousSibling.src === e.src && e.remove());
+			doc.querySelectorAll('img').forEach(e => e.previousSibling && e.previousSibling.src === e.src && e.remove());
 
-			forEach(doc.querySelectorAll('*'), element => {
+			doc.querySelectorAll('*').forEach(element => {
 				const style = element.getAttribute('style');
 				if (style && !styles.has(style)) {
 					styles.set(style, styles.size);
@@ -65,7 +71,7 @@ module.exports = function collect(options = { }) {
 			doc.querySelector('head').innerHTML = (`
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>
-			${ (doc.querySelector('title') && doc.querySelector('title').innerHTML || '').trim() }
+			${ (doc.querySelector('title') && doc.querySelector('title').innerHTML).trim() }
 		</title>`) + (options.styles && css && `
 		<style id="inlinetyles" type="text/css">
 			${ css }
@@ -124,7 +130,7 @@ function findRecursive(array, test, key) {
 	return result;
 }
 
-const serializer = new XMLSerializer;
+const serializer = new global.XMLSerializer;
 function toXML(element) {
 	return serializer.serializeToString(element);
 }

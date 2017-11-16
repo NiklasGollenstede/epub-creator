@@ -7,3 +7,4 @@ npm-debug.log
 files.json
 manifest.json
 view.html
+package-lock.json
