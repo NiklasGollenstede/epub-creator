@@ -1,6 +1,6 @@
 {
 	"name": "epub",
-	"version": "0.5.0",
+	"version": "0.5.2",
 	"title": "ePub Creator",
 	"description": "ePub Creator is a WebExtension that creates ePub e-books from web pages. Currently it only works on 'overdrive.com's online reader.",
 	"author": "Niklas Gollenstede",
@@ -18,28 +18,25 @@
 			"what": { "name": "Book Icon", "url": "http://fontawesome.io/icon/book/" },
 			"who": { "name": "Dave Gandy", "url": "https://twitter.com/davegandy" },
 			"license": { "name": "OFL-1.1", "url": "http://scripts.sil.org/OFL" }
-		}, {
-			"what": { "name": "Error Triangle" },
-			"who": { "name": "Freepik", "url": "http://www.freepik.com" },
-			"license": { "name": "CC 3.0 BY", "url": "https://creativecommons.org/licenses/by/3.0/" }
 		}
 	],
 
 	"dependencies": {
-		"jszip": "Stuk/jszip#v3.1.3",
+		"jszip": "Stuk/jszip#v3.1.5",
 		"es6lib": "0.0.2",
-		"web-ext-build": "0.0.6",
-		"web-ext-utils": "0.0.15"
+		"web-ext-build": "0.0.8",
+		"web-ext-utils": "0.0.18"
 	},
 	"devDependencies": {
-		"babel-eslint": "7.1.1",
-		"eslint": "3.14.1",
+		"babel-eslint": "8.2.2",
+		"eslint": "4.19.1",
 		"eslintrc": "NiklasGollenstede/eslintrc"
 	},
 	"scripts": {
 		"postinstall": "npm start",
 		"start": "web-ext-build",
-		"lint": "eslint --ignore-path .gitignore ."
+		"lint": "eslint --ignore-path .gitignore .",
+		"sign": "web-ext-build {beta:$APPVEYOR_BUILD_NUMBER,sign:1}"
 	},
 	"eslintConfig": {
 		"extends": "./node_modules/eslintrc/web-ext.js"

@@ -1,5 +1,5 @@
 /*eslint strict: ["error", "global"], no-implicit-globals: "off"*/ 'use strict'; /* globals module, */ // license: MPL-2.0
-module.exports = function({ /*options, packageJson,*/ manifestJson, files, }) {
+module.exports = function({ options, /*packageJson,*/ manifestJson, files, }) {
 
 	manifestJson.permissions.push(
 		'notifications',
@@ -11,9 +11,7 @@ module.exports = function({ /*options, packageJson,*/ manifestJson, files, }) {
 		default_title: 'Download as eBook',
 	};
 
-	files['.'].push(
-		'error.svg'
-	);
+	!options.viewRoot && (options.viewRoot = options.chrome ? 'ePub.html' : 'ePub');
 
 	files.node_modules = [
 		'es6lib/template.js',
@@ -23,8 +21,8 @@ module.exports = function({ /*options, packageJson,*/ manifestJson, files, }) {
 		'es6lib/string.js',
 		'jszip/dist/jszip.min.js',
 		'jszip/LICENSE.markdown',
-		'regexpx/index.js',
 		'web-ext-utils/browser/index.js',
+		'web-ext-utils/browser/storage.js',
 		'web-ext-utils/browser/version.js',
 		'web-ext-utils/lib/multiport/index.js',
 		'web-ext-utils/lib/pbq/require.js',
@@ -43,6 +41,7 @@ module.exports = function({ /*options, packageJson,*/ manifestJson, files, }) {
 		'web-ext-utils/options/editor/inline.js',
 		'web-ext-utils/options/index.js',
 		'web-ext-utils/update/index.js',
+		'web-ext-utils/utils/icons/',
 		'web-ext-utils/utils/event.js',
 		'web-ext-utils/utils/files.js',
 		'web-ext-utils/utils/index.js',

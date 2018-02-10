@@ -69,7 +69,7 @@ class EPub {
 				this.nav = true;
 			} else if (!(/<nav[^>]*?ops:type="toc".*?>[^]*?<\/nav>/).test(this.nav.content)) { // invalid toc
 				this.nav.mimeType = 'application/xhtml+xml';
-				const prefix = this.nav.name.replace(/[^\/\\]+/g, '..').replace(/\.\.$/, '') || '';
+				const prefix = this.nav.name.replace(/[^/\\]+/g, '..').replace(/\.\.$/, '') || '';
 				this.nav.originalContent = this.nav.content;
 				this.nav.content = Templates.navHtml(this, prefix);
 			}
@@ -161,7 +161,8 @@ class EPub {
 		try {
 			return zip.generateAsync({ mimeType, type: 'blob', });
 		} catch (error) {
-			return zip.generateAsync({ mimeType, type: 'uint8array', }).then(array => new Blob([ array, ], { type: mimeType, }));
+			return zip.generateAsync({ mimeType, type: 'uint8array', })
+			.then(array => new Blob([ array, ], { type: mimeType, })); /* global Blob, */
 		}
 	}
 

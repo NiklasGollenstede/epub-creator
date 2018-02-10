@@ -6,5 +6,6 @@ npm-debug.log
 /update/*/versions.json
 files.json
 manifest.json
-view.html
+ePub
+ePub.html
 package-lock.json

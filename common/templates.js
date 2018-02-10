@@ -1,5 +1,5 @@
 (function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	'node_modules/es6lib/template': { TemplateEngine, ForEach, ForOf, While, If, Value, Index, Key, Call, Predicate, End, NoMap, },
+	'node_modules/es6lib/template': { TemplateEngine, ForEach, /*ForOf,*/ /*While,*/ If, /*Value,*/ Index, /*Key,*/ Call, /*Predicate,*/ End, NoMap, },
 	'node_modules/es6lib/string': { escapeHtml, removeTags, },
 	exports,
 }) => {
@@ -12,7 +12,7 @@
 
 const engine = TemplateEngine({ trim: 'front parts', mapper: s => escapeHtml((s+'') || ''), });
 
-const navHtml = exports.navHtml = ({ language, chapters, title, nav, }, prefix = '')  => (engine`
+exports.navHtml = ({ language, chapters, title, nav, }, prefix = '')  => (engine`
 <?xml version="1.0" encoding="UTF-8" ?>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ops="http://www.idpf.org/2007/ops"
@@ -39,7 +39,7 @@ const navHtml = exports.navHtml = ({ language, chapters, title, nav, }, prefix =
 </html>
 `);
 
-const containerXml = exports.containerXml = ({ opf, }) => (engine`
+exports.containerXml = ({ opf, }) => (engine`
 <?xml version="1.0" encoding="UTF-8" ?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
 	<rootfiles>
@@ -48,7 +48,7 @@ const containerXml = exports.containerXml = ({ opf, }) => (engine`
 </container>
 `);
 
-const contentOpf = exports.contentOpf = ({ guid, language, title, description, creators, published, chapters, resources, markNav, nav, cover, ncx, }) => (engine`
+exports.contentOpf = ({ guid, language, title, description, creators, published, chapters, resources, markNav, nav, cover, ncx, }) => (engine`
 <?xml version="1.0" encoding="UTF-8"?>
 <package version="3.0"
 	xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -114,7 +114,7 @@ const contentOpf = exports.contentOpf = ({ guid, language, title, description, c
 </package>
 `);
 
-const contentNcx = exports.contentNcx = ({ guid, language, title, description, creators, published, chapters, }) => (engine`
+exports.contentNcx = ({ guid, language, title, /*description,*/ creators, /*published,*/ chapters, }) => (engine`
 <?xml version="1.0" encoding="UTF-8"?>
 <ncx
 	xmlns="http://www.daisy.org/z3986/2005/ncx/"
@@ -142,7 +142,7 @@ const contentNcx = exports.contentNcx = ({ guid, language, title, description, c
 </ncx>
 `);
 
-const htmlFrame = exports.htmlFrame = ({ content, title, }) => (engine`
+exports.htmlFrame = ({ content, title, }) => (engine`
 <!DOCTYPE html>
 <html>
 	<head>
@@ -155,7 +155,7 @@ ${ NoMap(content) }
 </html>
 `);
 
-const xhtmlFrame = exports.xhtmlFrame = ({ content, title, }) => (engine`
+exports.xhtmlFrame = ({ content, title, }) => (engine`
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
