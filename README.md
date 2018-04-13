@@ -1,11 +1,37 @@
-# ePub Creator -- create ePubs `overdrive.com`s online reader
+# ePub Creator -- create ePubs from web pages and `overdrive.com`s online reader
+
+
+ePub creator allows you to save web pages opened in the browser as offline ePub e-books.
+It currently supports:<ul>
+	<li> books opened in the online reader of the library service overdrive.com </li>
+	<li> any web page opened in Firefox's Reader Mode </li>
+</ul>
+
+<b>Instructions:</b>
+<ol>
+	<li> open the page / book you want to save (on overdrive, go to "Loans" and choose "Read now in browser") </li>
+	<li> click the extensions icon (blue book with green arrow, should be at the top right of the browser, see screenshot) </li>
+	<li> wait while the animation on the icon is spinning (this can take a while in the e-book contains many pictures etc.) </li>
+	<li> save or open the e-book when prompted </li>
+</ol>
+
+Whether saving content this way is <b>legal or not</b> depends on the content and your <b>local legislation</b>. Checking this is <b>your own responsibility</b>. Just because you can do it doesn't mean you should.
+
+Permissions used:<ul>
+	<li> <b>Display notifications</b>: Only as direct consequence of clicks on the icon or to  report errors </li>
+	<li> <b>Access your data for all websites</b>: Download page content <b>if you choose so</b> </li>
+</ul>
 
 
 ## Development builds -- ![](https://ci.appveyor.com/api/projects/status/github/NiklasGollenstede/epub-creator?svg=true)
 
 Development builds are automatically created on every commit with [appveyor](https://ci.appveyor.com/project/NiklasGollenstede/epub-creator/history) and published as [release](https://github.com/NiklasGollenstede/epub-creator/releases) on GitHub.\
-These build use a different id (`-dev` suffix), so they can / have to be installed parallel to the release versions from AMO; only keep one version installed and active.\
-Dev versions therefore never update to release versions, but they use the browsers build-in update mechanism to automatically update to the latest dev release. Every release version corresponds to the dev version with the same version prefix and the highest build number.
+These build use a different id (`-dev` suffix), so they are installed as additional extension and do not replace the release version. This means that:
+ * you probably want to disable the release version, while the development version is active
+ * any options set are managed individually (which also means that pre-release versions can't mess with your settings)
+ * they never update to release versions, but
+    * they update themselves to the latest development version
+    * every release version has a corresponding development version (the one with the same prefix and highest build number)
 
 
 ## How to Build
@@ -24,9 +50,9 @@ The `.zip` file is ready to be uploaded on AMO, and the `build/` directory or th
 
 To test the extension in a fresh Firefox profile, use the `{run:1}` or `{run:{bin:'path/to firefox/binary'}}` option.
 
-To build for chrome (which doesn't support `.svg` icons), add the `{chrome:1}` option.
+To build for chrome (which e.g. doesn't support `.svg` icons), add the `{chrome:1}` option.
 
 
-## AMO review notes
+## AMO code review notes
 
 The exact version of the minified JSZip file can be found here: `https://github.com/Stuk/jszip/blob/v3.1.5/dist/jszip.min.js`.

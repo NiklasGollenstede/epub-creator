@@ -4,11 +4,12 @@ module.exports = function({ options, /*packageJson,*/ manifestJson, files, }) {
 	manifestJson.permissions.push(
 		'notifications',
 		'activeTab',
+		'<all_urls>', // for fetch in background/reader-mode.js
 	);
 
 	manifestJson.browser_action = {
 		default_icon: manifestJson.icons,
-		default_title: 'Download as eBook',
+		default_title: 'Save as ePub',
 	};
 
 	!options.viewRoot && (options.viewRoot = options.chrome ? 'ePub.html' : 'ePub');
@@ -21,6 +22,7 @@ module.exports = function({ options, /*packageJson,*/ manifestJson, files, }) {
 		'es6lib/string.js',
 		'jszip/dist/jszip.min.js',
 		'jszip/LICENSE.markdown',
+		'readability/Readability.js',
 		'web-ext-utils/browser/index.js',
 		'web-ext-utils/browser/storage.js',
 		'web-ext-utils/browser/version.js',

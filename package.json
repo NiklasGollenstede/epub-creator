@@ -2,9 +2,9 @@
 	"name": "epub",
 	"version": "0.5.2",
 	"title": "ePub Creator",
-	"description": "ePub Creator is a WebExtension that creates ePub e-books from web pages. Currently it only works on 'overdrive.com's online reader.",
+	"description": "ePub Creator is a WebExtension that creates ePub e-books from web pages and 'overdrive.com's online reader.",
 	"author": "Niklas Gollenstede",
-	"license": "MPL 2.0",
+	"license": "MPL-2.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/NiklasGollenstede/epub-creator"
@@ -24,6 +24,7 @@
 	"dependencies": {
 		"jszip": "Stuk/jszip#v3.1.5",
 		"es6lib": "0.0.2",
+		"readability": "mozilla/readability#3c76104",
 		"web-ext-build": "0.0.8",
 		"web-ext-utils": "0.0.18"
 	},

@@ -3,10 +3,10 @@
 	'common/epub': EPub,
 	'common/options': options,
 	require,
-}) => async collector => {
+}) => async (collector, params = { }) => {
 
 	const collect = (await require.async('content/collect/'+ collector));
-	const contents = (await collect({ styles: options.collectStyles.value, }));
+	const contents = (await collect({ styles: options.collectStyles.value, ...params, }));
 	if (!contents) { return null; }
 
 	const book = new EPub(Object.assign(contents, { markNav: options.setNavProperty.value, }));

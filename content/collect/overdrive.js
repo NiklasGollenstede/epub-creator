@@ -6,7 +6,7 @@
  * @return {object} Options that can be passed as argument to the EPub constructor.
  */
 
-// get a JSON clone of  window.wrappedJSObject.bData
+// get a JSON clone of window.wrappedJSObject.bData
 const bData = inject(() => window.bData);
 
 const resources = [ ]; let nav = false, cover = false;
@@ -98,7 +98,7 @@ const chapters = (await Promise.all(bData.spine.map(async ({
 	});
 } finally {
 	frame.remove();
-} }).filter(_=>_)));
+} }))).filter(_=>_);
 
 return ({
 	chapters,
