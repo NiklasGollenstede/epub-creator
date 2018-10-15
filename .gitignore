@@ -8,4 +8,5 @@ files.json
 manifest.json
 ePub
 ePub.html
+view.html
 package-lock.json

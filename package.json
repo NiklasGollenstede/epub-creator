@@ -1,6 +1,6 @@
 {
 	"name": "epub",
-	"version": "0.5.2",
+	"version": "0.5.3",
 	"title": "ePub Creator",
 	"description": "ePub Creator is a WebExtension that creates ePub e-books from web pages and 'overdrive.com's online reader.",
 	"author": "Niklas Gollenstede",
@@ -22,22 +22,28 @@
 	],
 
 	"dependencies": {
-		"jszip": "Stuk/jszip#v3.1.5",
-		"es6lib": "0.0.2",
-		"readability": "mozilla/readability#3c76104",
-		"web-ext-build": "0.0.8",
-		"web-ext-utils": "0.0.18"
+		"jszip": "github:Stuk/jszip#v3.1.5",
+		"es6lib": "0.0.3",
+		"multiport": "0.2.3",
+		"pbq": "0.3.5",
+		"readability": "github:mozilla/readability#3be1aaa",
+		"web-ext-build": "0.0.10",
+		"web-ext-utils": "0.1.8"
 	},
 	"devDependencies": {
-		"babel-eslint": "8.2.2",
-		"eslint": "4.19.1",
-		"eslintrc": "NiklasGollenstede/eslintrc"
+		"eslintrc": "github:NiklasGollenstede/eslintrc#5837452",
+		"ghooks": "^2.0.4"
 	},
 	"scripts": {
 		"postinstall": "npm start",
 		"start": "web-ext-build",
-		"lint": "eslint --ignore-path .gitignore .",
+		"lint": "eslintrc --ignore-path .gitignore .",
 		"sign": "web-ext-build {beta:$APPVEYOR_BUILD_NUMBER,sign:1}"
+	},
+	"config": {
+		"ghooks": {
+			"pre-commit": "npm run lint --silent -- --color"
+		}
 	},
 	"eslintConfig": {
 		"extends": "./node_modules/eslintrc/web-ext.js"

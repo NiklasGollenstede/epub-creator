@@ -3,7 +3,7 @@
 
 ePub creator allows you to save web pages opened in the browser as offline ePub e-books.
 It currently supports:<ul>
-	<li> books opened in the online reader of the library service overdrive.com </li>
+	<li> books opened in the online reader of the library service <a href="https://www.overdrive.com/">overdrive.com</a> </li>
 	<li> any web page opened in Firefox's Reader Mode </li>
 </ul>
 
@@ -17,9 +17,10 @@ It currently supports:<ul>
 
 Whether saving content this way is <b>legal or not</b> depends on the content and your <b>local legislation</b>. Checking this is <b>your own responsibility</b>. Just because you can do it doesn't mean you should.
 
-Permissions used:<ul>
-	<li> <b>Display notifications</b>: Only as direct consequence of clicks on the icon or to  report errors </li>
+<b>Permissions used</b>:<ul>
+	<li> <b>Display notifications</b>: Only as direct consequence of clicks on the icon or to report errors </li>
 	<li> <b>Access your data for all websites</b>: Download page content <b>if you choose so</b> </li>
+	<li> <b>Access recently closed tabs</b>: Remove own popups from the recently closed windows list </li>
 </ul>
 
 
