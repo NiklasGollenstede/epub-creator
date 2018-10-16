@@ -49,7 +49,7 @@ const { view, tabId, windowId, } = (await openView(
 	const parsed = new Readability(new view.DOMParser().parseFromString((await getHtml), 'text/html'), { }).parse();
 	const document = new view.DOMParser().parseFromString(`<!DOCTYPE html>
 <html><head><meta http-equiv="Content-Security-Policy" content="default-src chrome:; img-src data: *; media-src *"></head><body>
-<div class="container" style="display:none">
+<div class="container">
 	<div class="header reader-header">
 		<a class="domain reader-domain" href="$uri.spec">$uri.host</a>
 		<h1 class="reader-title">$title</h1>
