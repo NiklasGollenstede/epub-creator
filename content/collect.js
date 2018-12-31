@@ -11,7 +11,7 @@
 
 	const book = new EPub(Object.assign(contents, { markNav: options.setNavProperty.value, }));
 	(await book.loadResources());
-	saveAs((await book.toBlob()), book.name);
+	saveAs((await book.toBlob()), ((book.name || book.title || 'book') +'').replace(/(?:[.]epub)?$/, '.epub'));
 
 	return book.name;
 }); })(this);

@@ -1,5 +1,5 @@
 (function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	'node_modules/web-ext-utils/browser/': { Tabs, Sessions, Windows, },
+	'node_modules/web-ext-utils/browser/': { Tabs, Sessions, Windows, manifest, },
 	'node_modules/web-ext-utils/loader/views': { openView, },
 	'shim!node_modules/readability/Readability:Readability': Readability,
 }) => async url => { /* globals fetch, */
@@ -47,6 +47,7 @@ const { view, tabId, windowId, } = (await openView(
 
 	// build the reader mode DOM content
 	const parsed = new Readability(new view.DOMParser().parseFromString((await getHtml), 'text/html'), { }).parse();
+	if (!parsed) { const error = new Error(`The version of the reader mode included with ${manifest.name} was unable to parse this article. This can happen for pages that load their content dynamically.`); error.title = 'Page could not be parsed'; throw error; }
 	const document = new view.DOMParser().parseFromString(`<!DOCTYPE html>
 <html><head><meta http-equiv="Content-Security-Policy" content="default-src chrome:; img-src data: *; media-src *"></head><body>
 <div class="container">

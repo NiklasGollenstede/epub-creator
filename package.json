@@ -1,6 +1,6 @@
 {
 	"name": "epub",
-	"version": "0.5.3",
+	"version": "0.5.4",
 	"title": "ePub Creator",
 	"description": "ePub Creator is a WebExtension that creates ePub e-books from web pages and 'overdrive.com's online reader.",
 	"author": "Niklas Gollenstede",
@@ -9,24 +9,21 @@
 		"type": "git",
 		"url": "https://github.com/NiklasGollenstede/epub-creator"
 	},
-	"contributions": [
-		{
-			"what": { "name": "JSZip", "url": "https://github.com/Stuk/jszip" },
-			"who": [ "Stuart Knightley", "David Duponchel", "Franz Buchinger", "António Afonso" ],
-			"license": { "name": "MIT", "url": "/node_modules/jszip/LICENSE.markdown" }
-		}, {
-			"what": { "name": "Book Icon", "url": "http://fontawesome.io/icon/book/" },
-			"who": { "name": "Dave Gandy", "url": "https://twitter.com/davegandy" },
-			"license": { "name": "OFL-1.1", "url": "http://scripts.sil.org/OFL" }
-		}
-	],
-
+	"contributions": [ {
+		"what": { "name": "JSZip", "url": "https://github.com/Stuk/jszip" },
+		"who": [ "Stuart Knightley", "David Duponchel", "Franz Buchinger", "António Afonso" ],
+		"license": { "name": "MIT", "url": "/node_modules/jszip/LICENSE.markdown" }
+	}, {
+		"what": { "name": "Book Icon", "url": "http://fontawesome.io/icon/book/" },
+		"who": { "name": "Dave Gandy", "url": "https://twitter.com/davegandy" },
+		"license": { "name": "OFL-1.1", "url": "http://scripts.sil.org/OFL" }
+	} ],
 	"dependencies": {
-		"jszip": "github:Stuk/jszip#v3.1.5",
 		"es6lib": "0.0.3",
+		"jszip": "github:Stuk/jszip#v3.1.5",
 		"multiport": "0.2.3",
 		"pbq": "0.3.5",
-		"readability": "github:mozilla/readability#3be1aaa",
+		"readability": "github:mozilla/readability#d8c8370",
 		"web-ext-build": "0.0.10",
 		"web-ext-utils": "0.1.8"
 	},

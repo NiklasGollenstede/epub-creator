@@ -14,13 +14,15 @@ const resources = [ ]; let nav = false, cover = false;
 const chapters = (await Promise.all(bData.spine.map(async ({
 	path, '-odread-original-path': name, linear,
 }, index) => { let frame; {
-	frame = global.document.createElement('iframe'); frame.src = path;
+	frame = global.document.createElement('iframe');
 } try {
 	frame.style.visibility = 'none'; frame.style.pointerEvents = 'none';
-	const loaded = new Promise((resolve, reject) => { frame.onload = resolve; frame.onerror = reject; });
-	global.document.body.appendChild(frame); (await loaded);
+	(await new Promise((onload, onerror) => {
+		frame.onload = onload; frame.onerror = onerror;
+		frame.src = path; global.document.body.appendChild(frame);
+	})); frame.onload = frame.onerror = null;
 	const { document, window, } = frame.contentWindow;
-	if (frame.contentDocument.title.trim() === 'Not found - OverDrive Read') { return null; }
+	if (document.title.trim() === 'Not found - OverDrive Read') { return null; }
 
 	// remove duplicate images
 	document.querySelectorAll('img').forEach(e => e.previousSibling && e.previousSibling.src === e.src && e.remove());
@@ -29,7 +31,7 @@ const chapters = (await Promise.all(bData.spine.map(async ({
 
 	const styles = new Map([ [ '', 0, ], ]);
 	document.querySelectorAll('*').forEach(element => {
-		const style = element.getAttribute('style');
+		const style = element.getAttribute('style') || '';
 		if (style && !styles.has(style)) {
 			styles.set(style, styles.size);
 		}
@@ -38,7 +40,7 @@ const chapters = (await Promise.all(bData.spine.map(async ({
 		element.removeAttribute('data-loc');
 		const computed = window.getComputedStyle(element);
 		if (index && options.styles) {
-			element.className = 'inline'+ index;
+			element.className = 'inline-'+ index;
 		} else {
 			element.removeAttribute('class');
 		}
@@ -55,10 +57,9 @@ const chapters = (await Promise.all(bData.spine.map(async ({
 		.underline { text-decoration: underline; }
 		.bold { font-weight: bold; }
 `	);
-	options.styles && (css += Array.from(styles, ([ index, style, ]) => `\t\t.inline${index} { ${style} }\n`).join(''));
+	options.styles && (css += Array.from(styles, ([ index, style, ]) => `\t\t.inline-${index} { ${style} }\n`).join(''));
 
 	// html clean-up
-	// TODO: set xhtml doctype
 	document.documentElement.setAttribute('xmlns', "http://www.w3.org/1999/xhtml");
 	document.querySelectorAll('style, link, menu').forEach(element => element.remove());
 	document.querySelectorAll('img').forEach(img => !img.alt && (img.alt = 'IMAGE'));
@@ -69,11 +70,9 @@ const chapters = (await Promise.all(bData.spine.map(async ({
 	const title = navToc && navToc.title || (document.querySelector('h1, h2, h3, h4') || { textContent: '', }).textContent || document.title;
 
 	// TODO: use something nicer than 'innerHTML ='
-	document.querySelector('head').innerHTML = (`
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>${document.title}</title>
-	<style id="inlinetyles" type="text/css">${css}</style>
-`	);
+	document.querySelector('head').innerHTML = `<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8"><title></title><style></style>`;
+	document.querySelector('title').textContent = title;
+	document.querySelector('style').textContent = css;
 
 	// check if this document represents the (first) cover or ToC
 	if (!nav && (
@@ -92,7 +91,7 @@ const chapters = (await Promise.all(bData.spine.map(async ({
 	return ({
 		name: name && decodeURI(name) || 'unnamed'+ index +'.html',
 		title,
-		content: toXML(document),
+		content: toXML(document).replace(/^.*$/m, `<?xml version="1.0" encoding="UTF-8"?>`),
 		mimeType: 'xhtml', // toXML produces xhtml
 		linear,
 	});

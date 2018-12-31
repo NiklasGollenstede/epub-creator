@@ -40,7 +40,8 @@ class EPub {
 		this.language = this.language || 'en';
 		this.guid = this.guid || Guid();
 		this.creators = [].concat(this.creators, this.creator, this.author, this.authors).filter(x => x);
-		!this.creators.find(it => it.role === 'author') && this.creators.push({ name: '<unknown>', role: 'author', });
+		let author = this.creators.find(it => it.role === 'author');
+		!author && this.creators.push((author = { name: '<unknown>', role: 'author', }));
 
 		this.chapters.forEach(chapter =>
 			chapter.mimeType === 'text/html-body'
@@ -100,7 +101,7 @@ class EPub {
 			};
 		}
 
-		this.name = this.name || this.creators.find(it => it.role === 'author').name +' - '+ this.title +'.epub';
+		this.name = this.name || (author.name ? author.name +' - ' : '') + this.title +'.epub';
 	}
 
 	/**
