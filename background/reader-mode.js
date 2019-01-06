@@ -45,9 +45,15 @@ const { view, tabId, windowId, } = (await openView(
 	}));
 	const { require, } = view, collector = 'about-reader';
 
-	// build the reader mode DOM content
+	// try to parse the fetched HTML
 	const parsed = new Readability(new view.DOMParser().parseFromString((await getHtml), 'text/html'), { }).parse();
-	if (!parsed) { const error = new Error(`The version of the reader mode included with ${manifest.name} was unable to parse this article. This can happen for pages that load their content dynamically.`); error.title = 'Page could not be parsed'; throw error; }
+	if (!parsed) { const error = new Error(`
+The version of the reader mode included with ${manifest.name} was unable to parse this article.
+This can happen for pages that load their content dynamically.
+Please close the reader mode and try again!
+	`.trim()); error.title = 'Page could not be parsed'; throw error; }
+
+	// build the reader mode DOM content
 	const document = new view.DOMParser().parseFromString(`<!DOCTYPE html>
 <html><head><meta http-equiv="Content-Security-Policy" content="default-src chrome:; img-src data: *; media-src *"></head><body>
 <div class="container">

@@ -10,13 +10,17 @@
 		"url": "https://github.com/NiklasGollenstede/epub-creator"
 	},
 	"contributions": [ {
+		"what": { "name": "Readability.js", "url": "https://github.com/mozilla/readability" },
+		"who": [ "Mozilla", "Arc90" ],
+		"license": { "name": "MIT", "url": "https://www.apache.org/licenses/LICENSE-2.0" }
+	}, {
 		"what": { "name": "JSZip", "url": "https://github.com/Stuk/jszip" },
 		"who": [ "Stuart Knightley", "David Duponchel", "Franz Buchinger", "António Afonso" ],
 		"license": { "name": "MIT", "url": "/node_modules/jszip/LICENSE.markdown" }
 	}, {
-		"what": { "name": "Book Icon", "url": "http://fontawesome.io/icon/book/" },
+		"what": { "name": "Book Icon", "url": "https://fontawesome.io/icon/book/" },
 		"who": { "name": "Dave Gandy", "url": "https://twitter.com/davegandy" },
-		"license": { "name": "OFL-1.1", "url": "http://scripts.sil.org/OFL" }
+		"license": { "name": "OFL-1.1", "url": "https://scripts.sil.org/OFL" }
 	} ],
 	"dependencies": {
 		"es6lib": "0.0.3",

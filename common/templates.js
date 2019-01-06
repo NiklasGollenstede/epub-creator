@@ -26,7 +26,7 @@ exports.navHtml = ({ language, chapters, title, nav, }, prefix = '')  => (engine
 			<h1>${ title }</h1>
 
 			<ol>
-				${ If(nav === true)}
+				${ If(nav === true) }
 				<li><a href="nav.xhtml">${ 'Table of Content' }</a></li>
 				${ End.If }
 				${ ForEach(chapters.filter(v => v.name && v.title)) }
