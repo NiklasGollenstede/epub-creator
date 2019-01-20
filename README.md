@@ -1,10 +1,11 @@
 # ePub Creator -- create ePubs from web pages and `overdrive.com`s online reader
 
+<!-- This section can be copied as the AMO listing. -->
 
 ePub creator allows you to save web pages opened in the browser as offline ePub e-books.
 It currently supports:<ul>
 	<li> books opened in the online reader of the library service <a href="https://www.overdrive.com/">overdrive.com</a> </li>
-	<li> any web page opened in Firefox's Reader Mode </li>
+	<li> any web page that can be opened in Firefox's Reader Mode </li>
 </ul>
 
 <b>Instructions:</b>

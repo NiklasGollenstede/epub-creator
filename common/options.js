@@ -12,7 +12,8 @@ const model = {
 	},
 	collectStyles: {
 		title: `Keep style information`,
-		description: `If enabled, some style information are extracted. Some readers won't be able to change the font size when styles are set.`,
+		description: `If enabled, some style information are extracted, but some readers won't be able to change the font settings when styles are set.
+		Only applies to <code>overdrive.com</code>, reader mode always removes all styles.`,
 		default: false,
 		input: { type: 'boolean', },
 	},

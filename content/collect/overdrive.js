@@ -57,7 +57,7 @@ const chapters = (await Promise.all(bData.spine.map(async ({
 		.underline { text-decoration: underline; }
 		.bold { font-weight: bold; }
 `	);
-	options.styles && (css += Array.from(styles, ([ index, style, ]) => `\t\t.inline-${index} { ${style} }\n`).join(''));
+	options.styles && (css += Array.from(styles, ([ style, index, ]) => `\t\t.inline-${index} { ${style} }\n`).join(''));
 
 	// html clean-up
 	document.documentElement.setAttribute('xmlns', "http://www.w3.org/1999/xhtml");
