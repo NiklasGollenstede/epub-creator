@@ -56,7 +56,7 @@ const chapters = (await Promise.all(bData.spine.map(async ({
 		.italic { font-style: italic; }
 		.underline { text-decoration: underline; }
 		.bold { font-weight: bold; }
-`	);
+	`);
 	options.styles && (css += Array.from(styles, ([ style, index, ]) => `\t\t.inline-${index} { ${style} }\n`).join(''));
 
 	// html clean-up
@@ -91,7 +91,7 @@ const chapters = (await Promise.all(bData.spine.map(async ({
 	return ({
 		name: name && decodeURI(name) || 'unnamed'+ index +'.html',
 		title,
-		content: toXML(document).replace(/^.*$/m, `<?xml version="1.0" encoding="UTF-8"?>`),
+		content: toXML(document).replace(/^.*?>/, `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n`),
 		mimeType: 'xhtml', // toXML produces xhtml
 		linear,
 	});

@@ -7,7 +7,7 @@
 
 const doc = document.querySelector('.container').cloneNode(true);
 
-const resources = (await Promise.all(Array.map(doc.querySelectorAll('img'), async img => {
+const resources = (await Promise.all(Array.from(doc.querySelectorAll('img'), async img => {
 	const { src, } = img, name = img.src = (await sha1(src)) +'/'+ src.match(/[^/]*[/]?(?:[?]|#|$)/)[0];
 	return { src, name, };
 })));
@@ -19,8 +19,8 @@ const author = global.prompt('Please enter/confirm the authors name', (
 ).textContent.replace(/\s+/g, ' ') || '<unknown>');
 if (author == null) { return null; }
 
-Array.forEach(doc.querySelectorAll('style, link, menu'), element => element.remove());
-Array.forEach(doc.querySelectorAll('*'), element => {
+doc.querySelectorAll('style, link, menu').forEach(element => element.remove());
+doc.querySelectorAll('*').forEach(element => {
 	for (let i = element.attributes.length; i-- > 0;) {
 		const attr = element.attributes[i];
 		if ([ 'class', 'src', 'href', 'title', 'alt', ].includes(attr.name)) { continue; }

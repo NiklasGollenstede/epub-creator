@@ -1,6 +1,6 @@
 {
 	"name": "epub",
-	"version": "0.5.4",
+	"version": "0.5.5",
 	"title": "ePub Creator",
 	"description": "ePub Creator is a WebExtension that creates ePub e-books from web pages and 'overdrive.com's online reader.",
 	"author": "Niklas Gollenstede",
@@ -9,6 +9,8 @@
 		"type": "git",
 		"url": "https://github.com/NiklasGollenstede/epub-creator"
 	},
+	"homepage": "https://github.com/NiklasGollenstede/epub-creator#readme",
+	"keywords": [ "book", "e-book", "ePub", "website", "article", "save", "offline", "one click", "overdrive.com", "reader mode" ],
 	"contributions": [ {
 		"what": { "name": "Readability.js", "url": "https://github.com/mozilla/readability" },
 		"who": [ "Mozilla", "Arc90" ],
@@ -26,10 +28,10 @@
 		"es6lib": "0.0.3",
 		"jszip": "github:Stuk/jszip#v3.1.5",
 		"multiport": "0.2.3",
-		"pbq": "0.3.5",
-		"readability": "github:mozilla/readability#d8c8370",
+		"pbq": "0.4.1",
+		"readability": "github:mozilla/readability#26379fe",
 		"web-ext-build": "0.0.10",
-		"web-ext-utils": "0.1.8"
+		"web-ext-utils": "0.1.11"
 	},
 	"devDependencies": {
 		"eslintrc": "github:NiklasGollenstede/eslintrc#5837452",

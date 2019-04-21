@@ -6,7 +6,7 @@
 const model = {
 	setNavProperty: {
 		title: `Set 'nav' property`,
-		description: `Standard compliant when set, but disables the navigation in Sumatra PDF`,
+		description: `Standard compliant when set, but disables the navigation in Sumatra PDF.`,
 		default: false,
 		input: { type: 'boolean', },
 	},

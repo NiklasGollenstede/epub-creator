@@ -1,11 +1,14 @@
 /*eslint strict: ["error", "global"], no-implicit-globals: "off"*/ 'use strict'; /* globals module, */ // license: MPL-2.0
-module.exports = function({ options, /*packageJson,*/ manifestJson, files, }) {
+module.exports = function({ options, packageJson, manifestJson, files, }) {
+
+	manifestJson.description = `Create offline e-books from web pages and 'overdrive.com' with a single click on the icon.`;
+	manifestJson.homepage_url = packageJson.homepage;
 
 	manifestJson.permissions.push(
 		'notifications',
 		'sessions', // to remove own closed popups
 		'activeTab',
-		'<all_urls>', // for fetch in background/reader-mode.js
+		'<all_urls>', // required to fetch DORS stuff
 	);
 
 	manifestJson.browser_action = {

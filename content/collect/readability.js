@@ -3,10 +3,12 @@
 	'shim!node_modules/readability/Readability:Readability': Readability,
 	aboutReader,
 }) => async function collect({ document: srcDoc = global.document.cloneNode(true), url = srcDoc.URL, } = { }) {
-
 /**
- * Can't access pages in reader mode any more, so this emulates the reader mode
+ * Collects the contents of any website that can be opened in the `about:reader` view.
+ * Since extensions can't access pages in reader mode any more, this emulates the reader mode
  * in the original content page and then proceeds as if it was loaded in `about:reader`.
+ * (This workaround is kept for now to be able to switch back to the reader view if it ever becomes accessible again.)
+ * @return {object} Options that can be passed as argument to the EPub constructor.
  */
 
 const parsed = new Readability(srcDoc, { }).parse();
