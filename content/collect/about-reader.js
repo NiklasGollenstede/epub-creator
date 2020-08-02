@@ -38,7 +38,7 @@ return ({
 	}, ],
 	title,
 	description: `Offline reader version of ${url}`,
-	language: null,
+	language: (new URL(url).hostname.match(/[.](.{2})$/) || [ null, null, ])[1],
 	creator: [ { name: author, role: 'author', }, ],
 	resources,
 	cover: false,

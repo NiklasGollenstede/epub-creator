@@ -8,6 +8,7 @@
 	const collect = (await require.async('content/collect/'+ collector));
 	const contents = (await collect({ styles: options.collectStyles.value, ...params, }));
 	if (!contents) { return null; }
+	if (!contents.language) { contents.language = options.defaultLanguage.value; }
 
 	const book = new EPub(Object.assign(contents, { markNav: options.setNavProperty.value, }));
 	(await book.loadResources({ allowErrors: true, }));

@@ -4,14 +4,21 @@
 }) => {
 
 const model = {
+	defaultLanguage: {
+		title: `Default Book Language`,
+		description: `Default '<dc:language>' to set if none could be detected.`,
+		default: 'en',
+		restrict: { match: (/^[a-z]{2,10}(:?-[A-Z]{2,10})?$/), message: `Must be n ISO language code, e.g. 'en' or 'en-US'`, },
+		input: { type: 'boolean', },
+	},
 	setNavProperty: {
-		title: `Set 'nav' property`,
+		title: `Set 'nav' Property`,
 		description: `Standard compliant when set, but disables the navigation in Sumatra PDF.`,
 		default: false,
 		input: { type: 'boolean', },
 	},
 	collectStyles: {
-		title: `Keep style information`,
+		title: `Keep Style Information`,
 		description: `If enabled, some style information are extracted, but some readers won't be able to change the font settings when styles are set.
 		Only applies to <code>overdrive.com</code>, reader mode always removes all styles.`,
 		default: false,
