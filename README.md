@@ -1,9 +1,9 @@
 # ePub Creator -- offline e-books in a single click
 
 <a href="https://addons.mozilla.org/firefox/addon/epub/"><img src="./resources/get-firefox-ext-172x60.png" width="86" height="30"></a>
-<a href="https://addons.mozilla.org/firefox/addon/epub/"><img src="./resources/get-chrome-ext-206x58.png" width="103" height="29"></a>
+<a href="https://chrome.google.com/webstore/detail/dholphmppikkchmalilfkmfanembgbil/"><img src="./resources/get-chrome-ext-206x58.png" width="103" height="29"></a>
 
-<!-- START:listing (This section can be copied as the AMO listing. The weired spacing is required.) -->
+<!-- START:listing (This section can be copied as the AMO listing. The weird spacing is required.) -->
 
 ePub creator allows you to save web pages opened in the browser as offline ePub e-books.
 It currently supports:<ul>
@@ -29,7 +29,7 @@ Whether saving content with this extension is <b>legal or not</b> depends on the
 
 What you get &amp; <b>Troubleshooting:</b>
 <ul>
-	<li> For general web pages, Mozilla's <code>Readability.js</code> is used to extract the content. Since that is the same software component used by Firefox to generate the Reader view, the result should generally be the same as well. All resources (e.g. images) that show up there should also be included in the ePub book. If parts of the website are missing in the book, please check whether they show up in the reader mode. If not, there is little I can change about that. </li>
+	<li> For general web pages, Mozilla's <code>Readability.js</code> is used to extract the content. Since that is the same software component used by Firefox to generate the Reader view, the result should generally be the same as well. All resources (e.g. images) that show up there should also be included in the ePub book. If parts of the website are missing in the book, please check whether they show up in the reader mode. If not, there is little this extension can change about that. Also note that some sites load e.g. images on demand, usually when scrolled to; before that, they won't be captured by the reader view or this extension. </li>
 	<li> Books from <a href="https://www.overdrive.com/">overdrive.com</a> are not simply downloaded, but the content is parsed from the open book. The ToC is rewritten, most of the formatting is stripped and everything gets repacked. While images are generally still included, their sizing might be off on some readers, rendering this quite useless for comics and the like. </li>
 	<li> If you have a problem that is not explained by the limitations above, please check for and/or open an <a href="https://github.com/NiklasGollenstede/epub-creator/issues">Issue on GutHub</a>. </li>
 </ul>
@@ -43,7 +43,7 @@ What you get &amp; <b>Troubleshooting:</b>
 
 <!-- END:listing -->
 
-## Development builds -- ![](https://ci.appveyor.com/api/projects/status/github/NiklasGollenstede/epub-creator?svg=true)
+## Development builds -- [![](https://ci.appveyor.com/api/projects/status/github/NiklasGollenstede/epub-creator?svg=true)](https://ci.appveyor.com/project/NiklasGollenstede/epub-creator)
 
 Development builds are automatically created on every commit with [appveyor](https://ci.appveyor.com/project/NiklasGollenstede/epub-creator/history) and published as [release](https://github.com/NiklasGollenstede/epub-creator/releases) on GitHub.\
 These build use a different id (`-dev` suffix), so they are installed as additional extension and do not replace the release version. This means that:

@@ -1,5 +1,5 @@
 (function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	'node_modules/es6lib/network': { HttpRequest, mimeTypes, },
+	'node_modules/es6lib/network': { mimeTypes, },
 	'node_modules/es6lib/object': { cloneOnto, },
 	'node_modules/es6lib/string': { Guid, },
 	'node_modules/jszip/dist/jszip.min': JsZip,
@@ -23,8 +23,9 @@ class EPub {
 	 *         @property {string}  mimeType  The chapters mine-type (or file extension which can be mapped to the mime-type). Default: dirived from file extension (name).
 	 *         @property {object}  options   Passed to JSZip. Necessary if content is not an utf8-string (e.g. base64, binary).
 	 *     @property {array} resources   Array of objects describing (external) resources to include. Same parameters as chapters, plus:
-	 *         @property {string}  src       Specifies the resources url if 'content' is empty.
-	 *         @property {object}  options   If the recourse is externally loaded, these options are also passed to the HttpRequest.
+	 *         @property {BLob}    content   Optional resource file content, will be downloaded from `.src` if not set.
+	 *         @property {string}  src       URL to download `.content` and infer `.name` from. Ignored if both are set.
+	 *         @property {string}  name      Path the resource is internally referred by.
 	 *     @property {string}  cover     Name of the cover page. Optional.
 	 *     @property {string}  nav       Name of the table of contents. Optional. If set but not ePub 3 compliant, it will be replaced a generated toc.
 	 *     @property {object}  ncx       Object { name, content, mimeType, } describing the ePub's .ncx file. Default: auto-generated.
@@ -109,21 +110,29 @@ class EPub {
 	 * @async
 	 * @return {Promise}  Promise that resolves to this.
 	 */
-	async loadResources() {
+	async loadResources({ allowErrors = false, timeout = 0, } = { }) {
 		if (!this.resources) { return this; }
 		const resources = Array.from(new Map(
 			this.resources.filter(({ src, content, }) => src && !content) // only unloaded
 			.map(it => [ it.src, it, ]) // unique .src
 		).values());
 
-		(await Promise.all(resources.map(async resource => {
-			const request = (await HttpRequest(resource.src, Object.assign({
-				responseType: 'arraybuffer',
-			}, resource.options)));
-			resource.content = request.response;
-			resource.mimeType = request.getResponseHeader('content-type') || resource.mimeType;
+		let loaded; const loading = Promise.all(resources.map(async resource => { try {
+			const reply = (await global.fetch(resource.src));
+			if (!reply.ok) { throw new Error(`Bad return status`); }
+
+			resource.content = (await reply.blob());
+			resource.mimeType = reply.headers.get('Content-Type') || resource.mimeType;
 			resource.name = resource.name || resource.src.match(/\/\/.*?\/(.*)$/)[1]; //.replace(/^oebps[\/\\]/i, '');
-		})));
+		} catch (error) { if (allowErrors) {
+			console.error(`Failed to fetch resource`, error);
+		} else { throw error; } } })).then(() => (loaded = true));
+
+		(await Promise.race([ loading, new Promise(wake => setTimeout(wake, timeout || 120e3)), ]));
+		if (!loaded) {
+			const message = `Loading of some resources timed out after ${ (timeout || 120e3) / 1e3 } seconds.`;
+			if (allowErrors) { console.error(message); } else { throw new Error(message); }
+		}
 
 		typeof this.opf === 'object' && (this.opf.content = Templates.contentOpf(this));
 
@@ -140,16 +149,8 @@ class EPub {
 		zip.folder('META-INF').file('container.xml', Templates.containerXml(this));
 
 		const oebps = zip.folder('OEBPS');
-
-		[
-			this.opf,
-			this.ncx,
-		].concat(
-			this.chapters,
-			this.resources.filter(_=>_.content)
-		)
+		[ this.opf, this.ncx, ...(this.chapters || [ ]), ...(this.resources.filter(_=>_.content) || [ ]), ]
 		.forEach(({ name, content, options, }) => oebps.file(name, content, options));
-
 		return zip;
 	}
 

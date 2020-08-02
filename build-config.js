@@ -19,11 +19,11 @@ module.exports = function({ options, packageJson, manifestJson, files, }) {
 	!options.viewRoot && (options.viewRoot = options.chrome ? 'ePub.html' : 'ePub');
 
 	files.node_modules = [
-		'es6lib/template.js',
 		'es6lib/dom.js',
 		'es6lib/network.js',
 		'es6lib/object.js',
 		'es6lib/string.js',
+		'es6lib/template.js',
 		'jszip/dist/jszip.min.js',
 		'jszip/LICENSE.markdown',
 		'multiport/index.js',

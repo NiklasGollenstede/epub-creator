@@ -10,8 +10,14 @@
 	if (!contents) { return null; }
 
 	const book = new EPub(Object.assign(contents, { markNav: options.setNavProperty.value, }));
-	(await book.loadResources());
+	(await book.loadResources({ allowErrors: true, }));
 	saveAs((await book.toBlob()), ((book.name || book.title || 'book') +'').replace(/(?:[.]epub)?$/, '.epub'));
 
 	return book.name;
-}); })(this);
+}); {
+	// use page context's fetch, discard all modifications by the content script environment (build in and custom)
+	if (global.wrappedJSObject && typeof XPCNativeWrapper === 'function') {
+		global.XMLHttpRequest = global.XPCNativeWrapper(global.wrappedJSObject.XMLHttpRequest);
+		global.fetch = global.XPCNativeWrapper(global.wrappedJSObject.fetch);
+	}
+} })(this);

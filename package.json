@@ -1,6 +1,6 @@
 {
 	"name": "epub",
-	"version": "0.5.5",
+	"version": "0.5.6",
 	"title": "ePub Creator",
 	"description": "ePub Creator is a WebExtension that creates ePub e-books from web pages and 'overdrive.com's online reader.",
 	"author": "Niklas Gollenstede",
