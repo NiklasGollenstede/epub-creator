@@ -3,6 +3,7 @@
 	'node_modules/web-ext-utils/loader/': { runInFrame, },
 	'node_modules/web-ext-utils/update/': updated,
 	'node_modules/web-ext-utils/utils/notify': notify,
+	'common/options': options,
 	require,
 }) => {
 
@@ -20,7 +21,7 @@ async function onClicked(tab) { return spinner.run(async () => {
 		); return;
 	} else if ((/^https:[/][/][^/]*read[.]overdrive[.]com/).test(tab.url)) {
 		collector = 'overdrive';
-	} else if (tab.isArticle || !('isArticle' in tab)) {
+	} else if (tab.isArticle || !('isArticle' in tab) || options.alwaysReader.value) {
 		collector = 'readability';
 	} else {
 		notify({

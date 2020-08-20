@@ -32,7 +32,7 @@ document.querySelector('.reader-credits').textContent = parsed.byline || '';
 document.querySelector('.container>.content').innerHTML = parsed.content; // this is not a live document, so this should be unproblematic: https://github.com/mozilla/readability/issues/404
 
 const content = (await aboutReader({ document, }));
-return {
+return content && {
 	...content,
 	language: global.document.documentElement.lang || global.document.body.lang || content.language,
 };

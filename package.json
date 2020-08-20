@@ -24,14 +24,15 @@
 		"who": { "name": "Dave Gandy", "url": "https://twitter.com/davegandy" },
 		"license": { "name": "OFL-1.1", "url": "https://scripts.sil.org/OFL" }
 	} ],
+	"private": true,
 	"dependencies": {
 		"es6lib": "0.0.3",
 		"jszip": "github:Stuk/jszip#v3.1.5",
 		"multiport": "0.2.3",
-		"pbq": "0.4.1",
+		"pbq": "0.5.0",
 		"readability": "github:mozilla/readability#26379fe",
 		"web-ext-build": "0.0.10",
-		"web-ext-utils": "0.1.11"
+		"web-ext-utils": "0.1.13"
 	},
 	"devDependencies": {
 		"eslintrc": "github:NiklasGollenstede/eslintrc#5837452",
@@ -46,6 +47,10 @@
 	"config": {
 		"ghooks": {
 			"pre-commit": "npm run lint --silent -- --color"
+		},
+		"web-ext-utils": {
+			"srcDir": "",
+			"viewName": "ePub"
 		}
 	},
 	"eslintConfig": {
