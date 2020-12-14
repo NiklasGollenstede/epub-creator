@@ -31,7 +31,7 @@
 		"multiport": "0.2.3",
 		"pbq": "0.5.0",
 		"readability": "github:mozilla/readability#26379fe",
-		"web-ext-build": "0.0.10",
+		"web-ext-build": "0.0.11",
 		"web-ext-utils": "0.1.13"
 	},
 	"devDependencies": {

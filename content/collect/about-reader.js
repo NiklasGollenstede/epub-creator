@@ -8,7 +8,7 @@
 const doc = document.querySelector('.container').cloneNode(true);
 
 const resources = (await Promise.all(Array.from(doc.querySelectorAll('img'), async img => {
-	const { src, } = img, name = img.src = (await sha1(src)) +'/'+ src.match(/[^/]*[/]?(?:[?]|#|$)/)[0];
+	const { src, } = img, name = img.src = (await pathPrefix(src)) +'/'+ src.match(/[^/]*[/]?(?:[?]|#|$)/)[0];
 	return { src, name, };
 })));
 const title = doc.querySelector('.reader-title').textContent;
@@ -50,9 +50,11 @@ function toXML(element) {
 	return (new global.XMLSerializer).serializeToString(element);
 }
 
-async function sha1(string) {
-	const hash = (await global.crypto.subtle.digest('SHA-1', new global.TextEncoder('utf-8').encode(string)));
-	return Array.from(new Uint8Array(hash)).map((b => b.toString(16).padStart(2, '0'))).join('');
+async function pathPrefix(string) {
+	const hash = global.crypto.subtle // not available on HTTP sites
+	? new Uint8Array((await global.crypto.subtle.digest('SHA-1', new global.TextEncoder('utf-8').encode(string)))) // a deterministic name is better
+	: crypto.getRandomValues(new Uint8Array(16)); // but random also works
+	return Array.from(hash).map((b => b.toString(16).padStart(2, '0'))).join('');
 }
 
 }); })(this);
