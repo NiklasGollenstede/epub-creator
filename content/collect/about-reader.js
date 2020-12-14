@@ -1,5 +1,5 @@
 (function(global) { 'use strict'; define(({ // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-}) => async function collect({ document = global.document, } = { }) {
+}) => async function collect({ document = global.document, } = { }) { /* globals URL, */
 /**
  * Collects the contents of an about:reader view.
  * @return {object} Options that can be passed as argument to the EPub constructor.
@@ -53,7 +53,7 @@ function toXML(element) {
 async function pathPrefix(string) {
 	const hash = global.crypto.subtle // not available on HTTP sites
 	? new Uint8Array((await global.crypto.subtle.digest('SHA-1', new global.TextEncoder('utf-8').encode(string)))) // a deterministic name is better
-	: crypto.getRandomValues(new Uint8Array(16)); // but random also works
+	: global.crypto.getRandomValues(new Uint8Array(16)); // but random also works
 	return Array.from(hash).map((b => b.toString(16).padStart(2, '0'))).join('');
 }
 

@@ -30,8 +30,8 @@
 		"jszip": "github:Stuk/jszip#v3.1.5",
 		"multiport": "0.2.3",
 		"pbq": "0.5.0",
-		"readability": "github:mozilla/readability#26379fe",
-		"web-ext-build": "0.0.11",
+		"readability": "github:mozilla/readability#290724c68c93359139a4663d18460f6d26e192e6",
+		"web-ext-build": "0.0.12",
 		"web-ext-utils": "0.1.13"
 	},
 	"devDependencies": {
@@ -54,6 +54,7 @@
 		}
 	},
 	"eslintConfig": {
-		"extends": "./node_modules/eslintrc/web-ext.js"
+		"extends": "./node_modules/eslintrc/web-ext.js",
+		"root": true
 	}
 }

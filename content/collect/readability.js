@@ -2,7 +2,7 @@
 	'node_modules/web-ext-utils/browser/': { manifest, },
 	'shim!node_modules/readability/Readability:Readability': Readability,
 	aboutReader,
-}) => async function collect({ document: srcDoc = global.document.cloneNode(true), url = srcDoc.URL, } = { }) {
+}) => async function collect({ document: srcDoc = global.document.cloneNode(true), url = srcDoc.URL, } = { }) { /* globals URL, */
 /**
  * Collects the contents of any website that can be opened in the `about:reader` view.
  * Since extensions can't access pages in reader mode any more, this emulates the reader mode

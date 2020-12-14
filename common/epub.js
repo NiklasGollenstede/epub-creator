@@ -4,7 +4,7 @@
 	'node_modules/es6lib/string': { Guid, },
 	'node_modules/jszip/dist/jszip.min': JsZip,
 	Templates,
-}) => {
+}) => { /* globals setTimeout, */
 
 const mimeType = mimeTypes.epub;
 
