@@ -8,7 +8,7 @@
 const doc = document.querySelector('.container').cloneNode(true);
 
 const resources = (await Promise.all(Array.from(doc.querySelectorAll('img'), async img => {
-	const { src, } = img, name = img.src = (await pathPrefix(src)) +'/'+ src.match(/[^/]*[/]?(?:[?]|#|$)/)[0];
+	const { src, } = img, name = img.src = (await pathPrefix(src)) +'/'+ new URL(src).pathname.split('/').pop();
 	return { src, name, };
 })));
 const title = doc.querySelector('.reader-title').textContent;
