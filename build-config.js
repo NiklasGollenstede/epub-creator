@@ -8,7 +8,7 @@ module.exports = function({ options, packageJson, manifestJson, files, }) {
 		'notifications',
 		'sessions', // to remove own closed popups
 		'activeTab',
-		'<all_urls>', // required to fetch DORS stuff
+		'<all_urls>', // required to fetch CORS stuff
 	);
 
 	manifestJson.browser_action = {

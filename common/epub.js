@@ -121,7 +121,7 @@ class EPub {
 			const reply = (await global.fetch(resource.src));
 			if (!reply.ok) { throw new Error(`Bad return status`); }
 
-			resource.content = (await reply.blob());
+			resource.content = (await reply.arrayBuffer()); // .blob() can lead to security context issues later on
 			resource.mimeType = reply.headers.get('Content-Type') || resource.mimeType;
 			resource.name = resource.name || resource.src.match(/\/\/.*?\/(.*)$/)[1]; //.replace(/^oebps[\/\\]/i, '');
 		} catch (error) { if (allowErrors) {
