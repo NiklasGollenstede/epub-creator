@@ -16,6 +16,8 @@ module.exports = function({ options, packageJson, manifestJson, files, }) {
 		default_title: 'Save as ePub',
 	};
 
+	manifestJson.background.persistent = true;
+
 	!options.viewRoot && (options.viewRoot = options.chrome ? 'ePub.html' : 'ePub');
 
 	files.node_modules = [
