@@ -20,6 +20,7 @@ const document = new global.DOMParser().parseFromString(`<!DOCTYPE html>
 <div class="container">
 	<div class="header reader-header">
 		<a class="domain reader-domain" href="$uri.spec">$uri.host</a>
+		<span class="reader-date">$date</span>
 		<h1 class="reader-title">$title</h1>
 		<div class="credits reader-credits">$credits</div>
 	</div>
@@ -27,6 +28,7 @@ const document = new global.DOMParser().parseFromString(`<!DOCTYPE html>
 </div></body></html>`, 'text/html');
 document.querySelector('.reader-domain').href = url;
 document.querySelector('.reader-domain').textContent = (new URL(url).host || '').replace(/^www\./, '');
+document.querySelector('.reader-date').textContent = ` (${new Date().toISOString().replace(/T.*/, '')})`;
 document.querySelector('.reader-title').textContent = parsed.title || '';
 document.querySelector('.reader-credits').textContent = parsed.byline || '';
 document.querySelector('.container>.content').innerHTML = parsed.content; // this is not a live document, so this should be unproblematic: https://github.com/mozilla/readability/issues/404
